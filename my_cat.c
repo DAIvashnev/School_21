@@ -13,24 +13,29 @@ int main(int argc, char *argv[]) {
                 printf("HOOOLLLAAA\n"); break;
             case 'v' :
                 printf("777777777777\n"); break;
-            default : 
+            default :
+                printf("my_cat: %s: There is no such file or directory\n", *argv); break;
+        }
+    }
+    while(*argv) {
+        if((fp = fopen(*++argv, "r")) == NULL && f == 0) {
+            printf("my_cat: %s: There is no such file or directory\n", *argv);
+            f = 1;
+        } else if(f == 0) {
+            while((c = getc(fp)) != EOF) {
+                putc(c, stdout);
+            }
+            fclose(fp);
+        }
+        if((fp = fopen(*++argv, "r")) == NULL) {
+            if(*argv == NULL) {
                 break;
+            }
+            printf("my_cat: %s: There is no such file or directory\n", *argv);
+        } else {
+            *--argv;
+            fclose(fp);
         }
     }
-    if((fp = fopen(*++argv, "r")) == NULL && f == 0) {
-        printf("error: can't open %s\n", *argv);
-        f = 1;
-    } else if(f == 0) {
-        int p = 0;
-        while((c = getc(fp)) != EOF) {
-            p++;
-            putc(c, stdout);
-        }
-        if(p == 0) {
-            printf("File %s is empty.\n", *argv);
-        }
-        fclose(fp);
-    }
-    
     return f;
 }
