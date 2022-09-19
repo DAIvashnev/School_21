@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 void my_cat(char *argv, char key, int *num);
 
@@ -17,7 +18,7 @@ void my_cat(char *argv, char key, int *num) {
                 if(c != '\n' && check == 0) {
                     check = 1;
                     *num += 1;
-                    printf("%d  ", *num);
+                    printf("     %d  ", *num);
                 }
                 putc(c, stdout);
                 if(c == '\n') {
@@ -25,18 +26,38 @@ void my_cat(char *argv, char key, int *num) {
                 }
             }
             fclose(fp);
+        } 
+        else if(key == 'n') {
+            int check = 0;
+            while((c = getc(fp)) != EOF) {
+                if((c != '\n' && check == 0) || (c == '\n' && check == 0)) {
+                    check = 1;
+                    *num += 1;
+                    printf("     %d  ", *num);
+                    putc(c, stdout);
+                }
+                if(c == '\n' && check == 1) {
+                    *num += 1;
+                    printf("     %d  ", *num);
+                    putc(c, stdout);
+                } else {
+                    putc(c, stdout);
+                }
+            }
+            fclose(fp);
+        } else {
+            while((c = getc(fp)) != EOF) {
+                putc(c, stdout);
+            }
+            fclose(fp);
         }
-        /*while((c = getc(fp)) != EOF) {
-            putc(c, stdout);
-        }
-        fclose(fp);*/
     }
 }
 
 int main(int argc, char *argv[]) {
     FILE *ch;
     char pt_c;
-    char key;
+    char key = '0';
     int num = 0;
     if(argc == 1) {
         while(1) {
@@ -65,9 +86,21 @@ int main(int argc, char *argv[]) {
                     }
                 } break;
             case 'n' :
-                switch (check[2]) {
-                    case '\0' : printf("HOOOLLLAAA\n"); break;
-                    default : printf("my_cat: invalid key - «%s»\n", check); break;
+                if(argc >= 2) {
+                    while(*argv) {
+                        argv++;
+                        if((ch = fopen(*argv, "r")) == NULL) {
+                            if(*argv == NULL) {
+                                break;
+                            }
+                            if(!(argv[1])) {
+                                printf("my_cat: %s: There is no such file or directory\n", *argv);
+                            }
+                        } else {
+                            key = 'n';
+                            my_cat(*argv, key, &num);
+                        }
+                    }
                 } break;
             default : printf("my_cat: invalid key - «%s»\n", check); break;
         }
