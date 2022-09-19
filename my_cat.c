@@ -28,21 +28,14 @@ void my_cat(char *argv, char key, int *num) {
             fclose(fp);
         } 
         else if(key == 'n') {
-            int check = 0;
+            int ch_c = 10;
             while((c = getc(fp)) != EOF) {
-                if((c != '\n' && check == 0) || (c == '\n' && check == 0)) {
-                    check = 1;
+                if(ch_c == 10) {
                     *num += 1;
                     printf("     %d  ", *num);
-                    putc(c, stdout);
                 }
-                if(c == '\n' && check == 1) {
-                    *num += 1;
-                    printf("     %d  ", *num);
-                    putc(c, stdout);
-                } else {
-                    putc(c, stdout);
-                }
+                putc(c, stdout);
+                ch_c = c;
             }
             fclose(fp);
         } else {
