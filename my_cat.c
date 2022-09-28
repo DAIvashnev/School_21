@@ -92,40 +92,41 @@ int check_key(char *check, int *argc, char *argv, int *num) {
 
 int main(int argc, char *argv[]) {
     char pt_c;
-    int num = 0;
     if(argc == 1) {
         while(1) {
             scanf("%c", &pt_c);
             printf("%c", pt_c);
         }
-    }
-    char *check = argv[1];
-    if(check[0] == '-') {
-        argv += 2;
-        while(*argv && check_key(check,&argc,*argv,&num) == 0) {
-            argv++;
-        }
     } else {
+        int f = 0;
+        int i = 0;
+        int num = 0;
+        char *check;
         argv++;
-        int f = 0;
-        /*int i = 2;
-        int f = 0;
-        while(argv[i] != NULL && f == 0) {
-            *check = *argv[i];
-            printf("%c", *check);
+        while(*argv != NULL && f == 0) {
+            check = *argv;
             if(check[0] == '-') {
-                *check = *argv[i];
+                check = *argv;
                 f = 1;
             }
             i++;
+            argv++;
+        }
+        while(i != 0) {
+            i--;
+            argv--;
         }
         if(f == 1) {
-            while(*argv && check_key(check,&argc,*argv,&num) == 2) {
+            while(*argv && check_key(check,&argc,*argv,&num) == 0) {
+                argv++;
+                if(*argv == check) {
+                    argv++;
+                }
+            }
+        } else {
+            while(*argv && check_key(check,&argc,*argv,&num) == 2 && f == 0) {
                 argv++;
             }
-        }*/
-        while(*argv && check_key(check,&argc,*argv,&num) == 2 && f == 0) {
-            argv++;
         }
     }
     return 0;
