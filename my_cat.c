@@ -34,6 +34,14 @@ void my_cat(char *argv, char key, int **num) {
             ch_c = c;
         }
         fclose(fp);
+    } else if(key == 'e') {
+        while((c = getc(fp)) != EOF) {
+            if(c == '\n') {
+                printf("$");
+            }
+            putc(c, stdout);
+        }
+        fclose(fp);
     } else {
         while((c = getc(fp)) != EOF) {
             putc(c, stdout);
@@ -80,6 +88,18 @@ int check_key(char *check, int *argc, char *argv, int *num) {
                     printf("my_cat: invalid key - «%s»\n", check);
                     f = 1;
                 } break;
+            case 'e' :
+                if(*argc > 2 && check[2] == 0) {
+                    if((ch = fopen(argv, "r")) == NULL) {
+                        printf("my_cat: %s: There is no such file or directory\n", argv);
+                    } else {
+                        key = 'e';
+                        my_cat(argv, key, &num);
+                    }
+                } else {
+                    printf("my_cat: invalid key - «%s»\n", check);
+                    f = 1;
+                } break;
             default : 
                 if(f != 2) {
                     printf("my_cat: invalid key - «%s»\n", check); 
@@ -102,12 +122,14 @@ int main(int argc, char *argv[]) {
         int i = 0;
         int num = 0;
         char *check;
-        argv++;
         while(*argv != NULL && f == 0) {
             check = *argv;
             if(check[0] == '-') {
                 check = *argv;
                 f = 1;
+                if(i == 1) {
+                    argv++;
+                }
             }
             i++;
             argv++;
@@ -116,6 +138,7 @@ int main(int argc, char *argv[]) {
             i--;
             argv--;
         }
+        argv++;
         if(f == 1) {
             while(*argv && check_key(check,&argc,*argv,&num) == 0) {
                 argv++;
