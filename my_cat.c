@@ -42,6 +42,17 @@ void my_cat(char *argv, char key, int **num) {
             putc(c, stdout);
         }
         fclose(fp);
+    } else if(key == 'v') {
+        while((c = getc(fp)) != EOF) {
+            if((c < 33 && c != 9 && c != 10 && c != 13 && c != 32) || c == 127) {
+                printf("^");
+                printf("%c", c += 64);
+
+            } else {
+                putc(c, stdout);
+            }
+        }
+        fclose(fp);
     } else {
         while((c = getc(fp)) != EOF) {
             putc(c, stdout);
@@ -63,50 +74,64 @@ int check_key(char *check, int *argc, char *argv, int *num) {
             my_cat(argv, key, &num);
         }
     }
-    switch (check[1]) {
-            case 'b' : 
+    if(f != 2){
+        switch (check[1]) {
+                case 'b' : 
+                    if(*argc > 2 && check[2] == 0) {
+                        if((ch = fopen(argv, "r")) == NULL) {
+                            printf("my_cat: %s: There is no such file or directory\n", argv);
+                        } else {
+                            key = 'b';
+                            my_cat(argv, key, &num);
+                        }
+                    } else {
+                        printf("my_cat: invalid key - «%s»\n", check);
+                        f = 1;
+                    } break;
+                case 'n' :
                 if(*argc > 2 && check[2] == 0) {
-                    if((ch = fopen(argv, "r")) == NULL) {
-                        printf("my_cat: %s: There is no such file or directory\n", argv);
+                        if((ch = fopen(argv, "r")) == NULL) {
+                            printf("my_cat: %s: There is no such file or directory\n", argv);
+                        } else {
+                            key = 'n';
+                            my_cat(argv, key, &num);
+                        }
                     } else {
-                        key = 'b';
-                        my_cat(argv, key, &num);
-                    }
-                } else {
-                    printf("my_cat: invalid key - «%s»\n", check);
-                    f = 1;
-                } break;
-            case 'n' :
-               if(*argc > 2 && check[2] == 0) {
-                    if((ch = fopen(argv, "r")) == NULL) {
-                        printf("my_cat: %s: There is no such file or directory\n", argv);
+                        printf("my_cat: invalid key - «%s»\n", check);
+                        f = 1;
+                    } break;
+                case 'e' :
+                    if(*argc > 2 && check[2] == 0) {
+                        if((ch = fopen(argv, "r")) == NULL) {
+                            printf("my_cat: %s: There is no such file or directory\n", argv);
+                        } else {
+                            key = 'e';
+                            my_cat(argv, key, &num);
+                        }
                     } else {
-                        key = 'n';
-                        my_cat(argv, key, &num);
-                    }
-                } else {
-                    printf("my_cat: invalid key - «%s»\n", check);
-                    f = 1;
-                } break;
-            case 'e' :
-                if(*argc > 2 && check[2] == 0) {
-                    if((ch = fopen(argv, "r")) == NULL) {
-                        printf("my_cat: %s: There is no such file or directory\n", argv);
+                        printf("my_cat: invalid key - «%s»\n", check);
+                        f = 1;
+                    } break;
+                case 'v' :
+                    if(*argc > 2 && check[2] == 0) {
+                        if((ch = fopen(argv, "r")) == NULL) {
+                            printf("my_cat: %s: There is no such file or directory\n", argv);
+                        } else {
+                            key = 'v';
+                            my_cat(argv, key, &num);
+                        }
                     } else {
-                        key = 'e';
-                        my_cat(argv, key, &num);
+                        printf("my_cat: invalid key - «%s»\n", check);
+                        f = 1;
+                    } break;
+                default : 
+                    if(f != 2) {
+                        printf("my_cat: invalid key - «%s»\n", check); 
+                        f = 1;
+                        break;
                     }
-                } else {
-                    printf("my_cat: invalid key - «%s»\n", check);
-                    f = 1;
-                } break;
-            default : 
-                if(f != 2) {
-                    printf("my_cat: invalid key - «%s»\n", check); 
-                    f = 1;
-                    break;
-                }
-        }
+            }
+    }
     return f;
 }
 
