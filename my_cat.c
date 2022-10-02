@@ -53,6 +53,27 @@ void my_cat(char *argv, char key, int **num) {
             }
         }
         fclose(fp);
+    } else if(key == 't') {
+        while((c = getc(fp)) != EOF) {
+            if(c == '\t') {
+                printf("^I");
+            }
+            putc(c, stdout);
+        }
+        fclose(fp);
+    } else if(key == 's') {
+        int f = 1;
+        while((c = getc(fp)) != EOF) {
+            if(c == '\n') {
+                f++;
+            } else {
+                f = 0;
+            }
+            if(f <= 2) {
+                putc(c, stdout);
+            }
+        }
+        fclose(fp);
     } else {
         while((c = getc(fp)) != EOF) {
             putc(c, stdout);
@@ -118,6 +139,30 @@ int check_key(char *check, int *argc, char *argv, int *num) {
                             printf("my_cat: %s: There is no such file or directory\n", argv);
                         } else {
                             key = 'v';
+                            my_cat(argv, key, &num);
+                        }
+                    } else {
+                        printf("my_cat: invalid key - «%s»\n", check);
+                        f = 1;
+                    } break;
+                case 't' :
+                    if(*argc > 2 && check[2] == 0) {
+                        if((ch = fopen(argv, "r")) == NULL) {
+                            printf("my_cat: %s: There is no such file or directory\n", argv);
+                        } else {
+                            key = 't';
+                            my_cat(argv, key, &num);
+                        }
+                    } else {
+                        printf("my_cat: invalid key - «%s»\n", check);
+                        f = 1;
+                    } break;
+                case 's' :
+                    if(*argc > 2 && check[2] == 0) {
+                        if((ch = fopen(argv, "r")) == NULL) {
+                            printf("my_cat: %s: There is no such file or directory\n", argv);
+                        } else {
+                            key = 's';
                             my_cat(argv, key, &num);
                         }
                     } else {
