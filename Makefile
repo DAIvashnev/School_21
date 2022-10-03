@@ -1,13 +1,20 @@
-SRC = my_cat.c
-NAME = cat_21
+SRC_C = my_cat.c
+SRC_G = grp.c
+NAME_C = cat_21
+NAME_G = grep_21
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -c
 
-all: cat
+all: cat grap
 
-cat: $(SRC)
-	$(CC) $(CFLAGS) $(SRC)
-	$(CC) *.o -o $(NAME)
+cat: $(SRC_C)
+	$(CC) $(CFLAGS) $(SRC_C)
+	$(CC) *.o -o $(NAME_C)
+	rm -rf *.o
+
+grep: $(SRC_G)
+	$(CC) $(CFLAGS) $(SRC_G)
+	$(CC) *.o -o $(NAME_G)
 	rm -rf *.o
 
 clean:
@@ -15,7 +22,8 @@ clean:
 
 fclean:
 	rm -rf *.o
-	rm -rf $(NAME)
+	rm -rf $(NAME_C)
+	rm -rf $(NAME_G)
 
 rebuild: fclean
 	make
