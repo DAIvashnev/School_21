@@ -5,7 +5,7 @@ NAME_G = grep_21
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -c
 
-all: cat grap
+all: cat grep
 
 cat: $(SRC_C)
 	$(CC) $(CFLAGS) $(SRC_C)
