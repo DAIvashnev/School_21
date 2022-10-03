@@ -86,10 +86,12 @@ int check_key(char *check, int *argc, char *argv, int *num) {
     FILE *ch;
     char key = '0';
     int f = 0;
+    char *n_der = "There is no such file or directory\n";
+    char *inv_key = "my_cat: invalid key";
     if(check[0] != '-') {
         if((ch = fopen(argv, "r")) == NULL) {
             f = 2;
-            printf("my_cat: %s: There is no such file or directory\n", argv);
+            printf("my_cat: %s: %s", argv, n_der);
         } else {
             f = 2;
             my_cat(argv, key, &num);
@@ -100,78 +102,78 @@ int check_key(char *check, int *argc, char *argv, int *num) {
                 case 'b' : 
                     if(*argc > 2 && check[2] == 0) {
                         if((ch = fopen(argv, "r")) == NULL) {
-                            printf("my_cat: %s: There is no such file or directory\n", argv);
+                            printf("my_cat: %s: %s", argv, n_der);
                         } else {
                             key = 'b';
                             my_cat(argv, key, &num);
                         }
                     } else {
-                        printf("my_cat: invalid key - «%s»\n", check);
+                        printf("%s - «%s»\n", inv_key, check);
                         f = 1;
                     } break;
                 case 'n' :
                 if(*argc > 2 && check[2] == 0) {
                         if((ch = fopen(argv, "r")) == NULL) {
-                            printf("my_cat: %s: There is no such file or directory\n", argv);
+                            printf("my_cat: %s: %s", argv, n_der);
                         } else {
                             key = 'n';
                             my_cat(argv, key, &num);
                         }
                     } else {
-                        printf("my_cat: invalid key - «%s»\n", check);
+                        printf("%s - «%s»\n", inv_key, check);
                         f = 1;
                     } break;
                 case 'e' :
                     if(*argc > 2 && check[2] == 0) {
                         if((ch = fopen(argv, "r")) == NULL) {
-                            printf("my_cat: %s: There is no such file or directory\n", argv);
+                            printf("my_cat: %s: %s", argv, n_der);
                         } else {
                             key = 'e';
                             my_cat(argv, key, &num);
                         }
                     } else {
-                        printf("my_cat: invalid key - «%s»\n", check);
+                        printf("%s - «%s»\n", inv_key, check);
                         f = 1;
                     } break;
                 case 'v' :
                     if(*argc > 2 && check[2] == 0) {
                         if((ch = fopen(argv, "r")) == NULL) {
-                            printf("my_cat: %s: There is no such file or directory\n", argv);
+                            printf("my_cat: %s: %s", argv, n_der);
                         } else {
                             key = 'v';
                             my_cat(argv, key, &num);
                         }
                     } else {
-                        printf("my_cat: invalid key - «%s»\n", check);
+                        printf("%s - «%s»\n", inv_key, check);
                         f = 1;
                     } break;
                 case 't' :
                     if(*argc > 2 && check[2] == 0) {
                         if((ch = fopen(argv, "r")) == NULL) {
-                            printf("my_cat: %s: There is no such file or directory\n", argv);
+                            printf("my_cat: %s: %s", argv, n_der);
                         } else {
                             key = 't';
                             my_cat(argv, key, &num);
                         }
                     } else {
-                        printf("my_cat: invalid key - «%s»\n", check);
+                        printf("%s - «%s»\n", inv_key, check);
                         f = 1;
                     } break;
                 case 's' :
                     if(*argc > 2 && check[2] == 0) {
                         if((ch = fopen(argv, "r")) == NULL) {
-                            printf("my_cat: %s: There is no such file or directory\n", argv);
+                            printf("my_cat: %s: %s", argv, n_der);
                         } else {
                             key = 's';
                             my_cat(argv, key, &num);
                         }
                     } else {
-                        printf("my_cat: invalid key - «%s»\n", check);
+                        printf("%s - «%s»\n", inv_key, check);
                         f = 1;
                     } break;
                 default : 
                     if(f != 2) {
-                        printf("my_cat: invalid key - «%s»\n", check); 
+                        printf("%s - «%s»\n", inv_key, check); 
                         f = 1;
                         break;
                     }
