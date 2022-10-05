@@ -12,8 +12,6 @@ int check_key(char *argv,char *key, int *num) {
         if(!(key[1] == 'b' || key[1] == 'n' || key[1] == 's' || key[1] == 'e' || key[1] == 'v' || key[1] == 't')) {
             printf("my_cat: invalid key - «%s»\n", key);
             f = 1;
-        } else {
-            f = 2;
         }
     } else if(key[0] != '0') {
         printf("my_cat: invalid key - «%s»\n", key);
@@ -61,14 +59,30 @@ void my_cat(char *argv, char *key, int *num) {
             if(c == '\n') {
                 printf("$");
             }
-            putc(c, stdout);
+            if((c < 33 && c != 9 && c != 10 && c != 13 && c != 32) || c == 127) {
+                printf("^");
+                if(c + 64 < 128) {
+                    printf("%c", c += 64);
+                } else {
+                    c = 128 - 127 + 62;
+                    printf("%c", c);
+                }
+
+            } else {
+                putc(c, stdout);
+            }
         }
         fclose(fp);
     } else if(key[1] == 'v') {
         while((c = getc(fp)) != EOF) {
             if((c < 33 && c != 9 && c != 10 && c != 13 && c != 32) || c == 127) {
                 printf("^");
-                printf("%c", c += 64);
+                if(c + 64 < 128) {
+                    printf("%c", c += 64);
+                } else {
+                    c = 128 - 127 + 62;
+                    printf("%c", c);
+                }
 
             } else {
                 putc(c, stdout);
@@ -80,7 +94,18 @@ void my_cat(char *argv, char *key, int *num) {
             if(c == '\t') {
                 printf("^I");
             }
-            putc(c, stdout);
+            if((c < 33 && c != 9 && c != 10 && c != 13 && c != 32) || c == 127) {
+                printf("^");
+                if(c + 64 < 128) {
+                    printf("%c", c += 64);
+                } else {
+                    c = 128 - 127 + 62;
+                    printf("%c", c);
+                }
+
+            } else {
+                putc(c, stdout);
+            }
         }
         fclose(fp);
     } else if(key[1] == 's') {
