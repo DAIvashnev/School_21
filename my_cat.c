@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 int check_key(char *argv, char *key, int *num);
+void show_nonprinting(char *argv, int *c, char *key);
 void my_cat(char *argv, char *key, int *num);
 
 int check_key(char *argv,char *key, int *num) {
@@ -23,6 +24,32 @@ int check_key(char *argv,char *key, int *num) {
         my_cat(argv, key, num);
     }
     return f;
+}
+
+void show_nonprinting(char *argv, int *c, char *key) {
+    FILE *sn;
+    sn = fopen(argv, "r");
+    while((*c = getc(sn)) != EOF) {
+        if(key[1] == 'e' && *c == '\n') {
+            printf("$");
+        }
+        if(key[1] == 't' && *c == '\t') {
+            printf("^I");
+        }
+        if((*c < 33 && *c != 9 && *c != 10 && *c != 13 && *c != 32) || *c == 127) {
+            printf("^");
+            if(*c + 64 < 128) {
+                printf("%c", *c += 64);
+            } else {
+                *c = 128 - 127 + 62;
+                printf("%c", *c);
+            }
+
+        } else {
+            putc(*c, stdout);
+        }
+    }
+    fclose(sn);
 }
 
 void my_cat(char *argv, char *key, int *num) {
@@ -54,60 +81,6 @@ void my_cat(char *argv, char *key, int *num) {
             ch_c = c;
         }
         fclose(fp);
-    } else if(key[1] == 'e') {
-        while((c = getc(fp)) != EOF) {
-            if(c == '\n') {
-                printf("$");
-            }
-            if((c < 33 && c != 9 && c != 10 && c != 13 && c != 32) || c == 127) {
-                printf("^");
-                if(c + 64 < 128) {
-                    printf("%c", c += 64);
-                } else {
-                    c = 128 - 127 + 62;
-                    printf("%c", c);
-                }
-
-            } else {
-                putc(c, stdout);
-            }
-        }
-        fclose(fp);
-    } else if(key[1] == 'v') {
-        while((c = getc(fp)) != EOF) {
-            if((c < 33 && c != 9 && c != 10 && c != 13 && c != 32) || c == 127) {
-                printf("^");
-                if(c + 64 < 128) {
-                    printf("%c", c += 64);
-                } else {
-                    c = 128 - 127 + 62;
-                    printf("%c", c);
-                }
-
-            } else {
-                putc(c, stdout);
-            }
-        }
-        fclose(fp);
-    } else if(key[1] == 't') {
-        while((c = getc(fp)) != EOF) {
-            if(c == '\t') {
-                printf("^I");
-            }
-            if((c < 33 && c != 9 && c != 10 && c != 13 && c != 32) || c == 127) {
-                printf("^");
-                if(c + 64 < 128) {
-                    printf("%c", c += 64);
-                } else {
-                    c = 128 - 127 + 62;
-                    printf("%c", c);
-                }
-
-            } else {
-                putc(c, stdout);
-            }
-        }
-        fclose(fp);
     } else if(key[1] == 's') {
         int f = 1;
         while((c = getc(fp)) != EOF) {
@@ -121,6 +94,8 @@ void my_cat(char *argv, char *key, int *num) {
             }
         }
         fclose(fp);
+    } else if(key[1] == 'e' || key[1] == 'v' || key[1] == 't') {
+        show_nonprinting(argv, &c, key);
     } else {
         while((c = getc(fp)) != EOF) {
             putc(c, stdout);
