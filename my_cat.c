@@ -2,30 +2,27 @@
 #include <string.h>
 #include <unistd.h>
 
-int check_key(int *argc, char *argv, char *key, int *num);
+int check_key(char *argv, char *key, int *num);
 void my_cat(char *argv, char *key, int *num);
 
-int check_key(int *argc, char *argv,char *key, int *num) {
+int check_key(char *argv,char *key, int *num) {
     FILE *ch;
     int f = 0;
-    if(key[0] != '-') {
-        f = 2;
-        if((ch = fopen(argv, "r")) == NULL) {
-            printf("my_cat: %s: There is no such file or directory\n", argv);
-        }
-        my_cat(argv, key, num);
-    }
-    if(f != 2) {
-        if(key[2] == 0) {
-            if(!(key[1] == 'b' || key[1] == 'n' || key[1] == 's' || key[1] == 'e' || key[1] == 'v' || key[1] == 't')) {
-                printf("my_cat: invalid key - «%s»\n", key);
-                f = 1;
-            }
-            my_cat(argv, key, num);
-        } else {
+    if(key[2] == 0 && key[0] != '0') {
+        if(!(key[1] == 'b' || key[1] == 'n' || key[1] == 's' || key[1] == 'e' || key[1] == 'v' || key[1] == 't')) {
             printf("my_cat: invalid key - «%s»\n", key);
             f = 1;
+        } else {
+            f = 2;
         }
+    } else if(key[0] != '0') {
+        printf("my_cat: invalid key - «%s»\n", key);
+        f = 1;
+    }
+    if((ch = fopen(argv, "r")) == NULL && f != 1) {
+        printf("my_cat: %s: There is no such file or directory\n", argv);
+    } else if(f != 1) {
+        my_cat(argv, key, num);
     }
     return f;
 }
@@ -136,7 +133,7 @@ int main(int argc, char *argv[]) {
         }
         argv++;
         if(f == 1) {
-            while(check_key(&argc, *argv, key, &num) != 1) {
+            while(*argv && check_key(*argv, key, &num) != 1) {
                 argv++;
                 if(*argv == key) {
                     argv++;
@@ -144,7 +141,8 @@ int main(int argc, char *argv[]) {
             }
         } else {
             key = "0";
-            while(check_key(&argc, *argv, key, &num) == 0) {
+            while(*argv) {
+                check_key(*argv, key, &num);
                 argv++;
             }
         }
