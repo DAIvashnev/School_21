@@ -34,7 +34,8 @@ void show_nonprinting(char *argv, int *c, char *key) {
             printf("$");
         }
         if(key[1] == 't' && *c == '\t') {
-            printf("^I");
+            *c = 73;
+            printf("^");
         }
         if((*c < 33 && *c != 9 && *c != 10 && *c != 13 && *c != 32) || *c == 127) {
             printf("^");
@@ -62,7 +63,7 @@ void my_cat(char *argv, char *key, int *num) {
             if(c != '\n' && check == 0) {
                 check = 1;
                 *num += 1;
-                printf("%6d  ", *num);
+                printf("%6d\t", *num);
             }
             putc(c, stdout);
             if(c == '\n') {
@@ -75,7 +76,7 @@ void my_cat(char *argv, char *key, int *num) {
         while((c = getc(fp)) != EOF) {
             if(ch_c == '\n') {
                 *num += 1;
-                printf("%6d  ", *num);
+                printf("%6d\t", *num);
             }
             putc(c, stdout);
             ch_c = c;
