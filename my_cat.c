@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 int check_key(char *argv, char *key, int *num);
-void show_nonprinting(char *argv, int *c, char *key);
+void show_nonprinting(char *argv, int *c, const char *key);
 void my_cat(char *argv, char *key, int *num);
 
 int check_key(char *argv,char *key, int *num) {
@@ -22,11 +22,12 @@ int check_key(char *argv,char *key, int *num) {
         printf("my_cat: %s: There is no such file or directory\n", argv);
     } else if(f != 1) {
         my_cat(argv, key, num);
+        fclose(ch);
     }
     return f;
 }
 
-void show_nonprinting(char *argv, int *c, char *key) {
+void show_nonprinting(char *argv, int *c, const char *key) {
     FILE *sn;
     sn = fopen(argv, "r");
     while((*c = getc(sn)) != EOF) {
