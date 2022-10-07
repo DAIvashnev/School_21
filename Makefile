@@ -1,5 +1,5 @@
 SRC_C = my_cat.c
-SRC_G = grp.c
+SRC_G = my_grep.c
 NAME_C = cat_21
 NAME_G = grep_21
 CC = gcc
