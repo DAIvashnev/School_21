@@ -4,7 +4,7 @@
 
 ` python3 ./cpplint.py --extensions=c name.c `
 
-` leaks -atExit -- ./main.out | grep LEAK: `
+` leaks -atExit -- ./main.out | grep LEAK: ` or ` valgrind ./ `
   
 Обратите внимание на команду ```| grep LEAK:```. Мы используем ее для короткого вывода, чтобы видеть только линии с утечками, если они есть. Если вы хотите увидеть весь вывод, просто удалите эту команду. 
 
