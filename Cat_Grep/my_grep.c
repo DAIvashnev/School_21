@@ -14,6 +14,8 @@ int cheking_file(char *argv) {
     if((ch = fopen(argv, "r")) == NULL) {
         printf("my_grep: %s: There is no such file or directory\n", argv);
         flag = 1;
+    } else {
+        fclose(ch);
     }
     return flag;
 }
@@ -38,9 +40,7 @@ void string_selection(const char *str, char *argv, int *argc) {
     ch_str[i] = '\n';
     ch_str[i+1] = '\0';
     check_search(str, ch_str, &argc, argv);
-    if(ch_str) {
-        free(ch_str);
-    }
+    free(ch_str);
     fclose(ch);
 }
 
@@ -59,9 +59,7 @@ void check_search(const char *str, char *ch_str, int **argc, char *argv) {
             j = 0;
         }
     }
-    if(ch_grep) {
-        free(ch_grep);
-    }
+    free(ch_grep);
 }
 
 void output(char *str, int ***argc, char *argv) {
