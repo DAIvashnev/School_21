@@ -3,16 +3,27 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-void find_ch(const char *str, char *argv);
+int cheking_file(char *argv);
+void string_selection(const char *str, char *argv);
+void check_search(const char *str, char *ch_str);
+void output(char *str, int *argc);
 
-void find_ch(const char *str, char *argv) {
+int cheking_file(char *argv) {
+    FILE *ch;
+    int flag = 0;
+    if((ch = fopen(argv, "r")) == NULL) {
+        printf("my_grep: %s: There is no such file or directory\n", argv);
+        flag = 1;
+    }
+    return flag;
+}
+
+
+void string_selection(const char *str, char *argv) {
     FILE *ch;
     int c;
     char *ch_str = NULL;
-    char ch_grep[1000];
     int i = 0;
-    int j = 0;
-    int k = 0;
     ch = fopen(argv, "r");
     while((c = getc(ch)) != EOF) {
         ch_str = realloc(ch_str, (i + 1) * sizeof(char));
@@ -20,36 +31,52 @@ void find_ch(const char *str, char *argv) {
         i++;
         if(c == '\n') {
             ch_str[i] = '\0';
-            while(ch_str[j] != '\n') {
-                if(ch_str[j] == str[k]) {
-                    ch_grep[k] = str[k];
-                    k++;
-                    ch_grep[k] = '\0';
-                } else {
-                    k = 0;
-                }
-                if(strcmp(str, ch_grep) == 0) {
-                    printf("%s\n", ch_str);
-                    break;
-                }
-                j++;
-            }
-            j = 0;
-            k = 0;
+            check_search(str, ch_str);
             i = 0;
         }
     }
-    ch_str[i] = '\0';
-    free(ch_str);
+    ch_str[i] = '\n';
+    ch_str[i+1] = '\0';
+    check_search(str, ch_str);
+    if(ch_str) {
+        free(ch_str);
+    }
     fclose(ch);
 }
 
+void check_search(const char *str, char *ch_str) {
+    int j = 0;
+    char *ch_grep = NULL;
+    for(int i = 0; ch_str[i] != '\0'; i++) {
+        if(ch_str[i] == str[j]) {
+            ch_grep = realloc(ch_grep, (j + 1) * sizeof(char));
+            ch_grep[j] = str[j];
+            j++;
+            if(strlen(str) == j && strcmp(str, ch_grep) == 0) {
+                output(ch_str);
+            }
+        } else {
+            j = 0;
+        }
+    }
+    if(ch_grep) {
+        free(ch_grep);
+    }
+}
+
+void output(char *str, int *argc) {
+    int sum_arguments = *argc;
+    printf("%d\n", sum_arguments);
+    printf("%s", str);
+}
+
 int main(int argc, char *argv[]) {
-    FILE *fp;
-    if((fp = fopen(argv[2], "r")) != NULL) {
-        find_ch(argv[1], argv[2]);
-    }else {
-        printf("my_grep: %s: There is no such file or directory\n", argv[2]);
+    int arguments = 2;
+    while(argv[arguments]) {
+        if(cheking_file(argv[arguments],&argc) == 0) {
+            string_selection(argv[1], argv[arguments]);
+        }
+        arguments++;
     }
     return 0;
 }
