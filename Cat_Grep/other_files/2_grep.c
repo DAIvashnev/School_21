@@ -4,69 +4,69 @@
 #include <stdlib.h>
 
 int cheking_file(char *argv);
-void string_selection(const char *str, char *argv, int *argc);
-void check_search(const char *str, char *ch_str, int **argc, char *argv);
-void output(char *str, int ***argc, char *argv);
+void string_selection(const char *search_str, char *argv, int *argc);
+void check_search(const char *search_str, char *choice_str, int **argc, char *argv);
+void output(char *choice_str, int ***argc, char *argv);
 
 int cheking_file(char *argv) {
-    FILE *ch;
+    FILE *fp;
     int flag = 0;
-    if((ch = fopen(argv, "r")) == NULL) {
+    if((fp = fopen(argv, "r")) == NULL) {
         printf("my_grep: %s: There is no such file or directory\n", argv);
         flag = 1;
     } else {
-        fclose(ch);
+        fclose(fp);
     }
     return flag;
 }
 
 
-void string_selection(const char *str, char *argv, int *argc) {
-    FILE *ch;
+void string_selection(const char *search_str, char *argv, int *argc) {
+    FILE *fp;
     int c;
-    char *ch_str = NULL;
+    char *choice_str = NULL;
     int i = 0;
-    ch = fopen(argv, "r");
-    while((c = getc(ch)) != EOF) {
-        ch_str = realloc(ch_str, (i + 1) * sizeof(char));
-        ch_str[i] = c;
+    fp = fopen(argv, "r");
+    while((c = getc(fp)) != EOF) {
+        choice_str = realloc(choice_str, (i + 1) * sizeof(char));
+        choice_str[i] = c;
         i++;
         if(c == '\n') {
-            ch_str[i] = '\0';
-            check_search(str, ch_str, &argc, argv);
+            choice_str[i] = '\0';
+            check_search(search_str, choice_str, &argc, argv);
             i = 0;
         }
     }
-    ch_str[i] = '\n';
-    ch_str[i+1] = '\0';
-    check_search(str, ch_str, &argc, argv);
-    free(ch_str);
-    fclose(ch);
+    choice_str[i] = '\n';
+    choice_str[i+1] = '\0';
+    check_search(search_str, choice_str, &argc, argv);
+    free(choice_str);
+    fclose(fp);
 }
 
-void check_search(const char *str, char *ch_str, int **argc, char *argv) {
+void check_search(const char *search_str, char *choice_str, int **argc, char *argv) {
     int j = 0;
-    char *ch_grep = NULL;
-    for(int i = 0; ch_str[i] != '\0'; i++) {
-        if(ch_str[i] == str[j]) {
-            ch_grep = realloc(ch_grep, (j + 1) * sizeof(char));
-            ch_grep[j] = str[j];
+    char *check_str = NULL;
+    for(int i = 0; choice_str[i] != '\0'; i++) {
+        if(choice_str[i] == search_str[j]) {
+            check_str = realloc(check_str, (j + 1) * sizeof(char));
+            check_str[j] = search_str[j];
             j++;
-            if(strlen(str) == j && strcmp(str, ch_grep) == 0) {
-                output(ch_str, &argc, argv);
+            if(strlen(search_str) == j && strcmp(search_str, check_str) == 0) {
+                output(choice_str, &argc, argv);
             }
         } else {
             j = 0;
         }
     }
-    free(ch_grep);
+    free(check_str);
 }
 
-void output(char *str, int ***argc, char *argv) {
+void output(char *choice_str, int ***argc, char *argv) {
     if(***argc > 3) {
-        printf("%s:%s", argv, str);
+        printf("%s:%s", argv, choice_str);
     } else {
-        printf("%s", str);
+        printf("%s", choice_str);
     }
 }
 
