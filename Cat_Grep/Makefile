@@ -25,6 +25,10 @@ cleancat:
 	rm -rf $(NAME_C)
 	rm -rf $(NAME_TC)
 
+cleangrep:
+	rm -rf my_grep.o
+	rm -rf $(NAME_G)
+
 fclean:
 	rm -rf *.o
 	rm -rf bash_cat.sh
