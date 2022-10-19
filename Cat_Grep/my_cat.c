@@ -2,32 +2,39 @@
 #include <string.h>
 #include <unistd.h>
 
-int check_key(char *argv, char *key, int *num);
-void show_nonprinting(char *argv, int *c, const char *key);
-void my_cat(char *argv, char *key, int *num);
+int data_key(char *argv, char **key);
+int checking_key(char *argv, char *key);
+void show_nonprinting(char *argv, int *c, char *key);
+void output(char *argv, char *key, int *num);
 
-int check_key(char *argv,char *key, int *num) {
+int data_key(char *argv, char **key) {
+    int flag = 0;
+    if(argv[0] == '-') {
+        *key = argv;
+        flag = 1;
+    }
+    return flag;
+}
+
+int checking_key(char *argv, char *key) {
     FILE *ch;
-    int f = 0;
+    int flag = 0;
     if(key[2] == 0 && key[0] != '0') {
         if(!(key[1] == 'b' || key[1] == 'n' || key[1] == 's' || key[1] == 'e' || key[1] == 'v' || key[1] == 't')) {
             printf("my_cat: invalid key - «%s»\n", key);
-            f = 1;
+            flag = 1;
         }
     } else if(key[0] != '0') {
         printf("my_cat: invalid key - «%s»\n", key);
-        f = 1;
+        flag = 1;
     }
-    if((ch = fopen(argv, "r")) == NULL && f != 1) {
+    if((ch = fopen(argv, "r")) == NULL && flag != 1) {
         printf("my_cat: %s: There is no such file or directory\n", argv);
-    } else if(f != 1) {
-        my_cat(argv, key, num);
-        fclose(ch);
     }
-    return f;
+    return flag;
 }
 
-void show_nonprinting(char *argv, int *c, const char *key) {
+void show_nonprinting(char *argv, int *c, char *key) {
     FILE *sn;
     sn = fopen(argv, "r");
     while((*c = getc(sn)) != EOF) {
@@ -54,7 +61,7 @@ void show_nonprinting(char *argv, int *c, const char *key) {
     fclose(sn);
 }
 
-void my_cat(char *argv, char *key, int *num) {
+void output(char *argv, char *key, int *num) {
     FILE *fp;
     int c;
     fp = fopen(argv, "r");
@@ -107,46 +114,19 @@ void my_cat(char *argv, char *key, int *num) {
 }
 
 int main(int argc, char *argv[]) {
-    char pt_c;
-    if(argc == 1) {
-        while(1) {
-            scanf("%c", &pt_c);
-            printf("%c", pt_c);
+    int num = 0;
+    int result_key = argc;
+    char *key = "0";
+    for(size_t i = 0; argv[i] != NULL && key[0] != '-'; i++) {
+        result_key = data_key(argv[i], &key);
+    }
+    if(result_key == 1) {
+        for(size_t i = 2; argv[i] != NULL && checking_key(argv[i], key) != 1; i++) {
+            output(argv[i], key, &num);
         }
     } else {
-        int f = 0;
-        int i = 0;
-        int num = 0;
-        char *key;
-        while(*argv != NULL && f == 0) {
-            key = *argv;
-            if(key[0] == '-') {
-                f = 1;
-                if(i == 1) {
-                    argv++;
-                }
-            }
-            i++;
-            argv++;
-        }
-        while(i != 0) {
-            i--;
-            argv--;
-        }
-        argv++;
-        if(f == 1) {
-            while(*argv && check_key(*argv, key, &num) != 1) {
-                argv++;
-                if(*argv == key) {
-                    argv++;
-                }
-            }
-        } else {
-            key = "0";
-            while(*argv) {
-                check_key(*argv, key, &num);
-                argv++;
-            }
+        for(size_t i = 1; argv[i] != NULL; i++) {
+            output(argv[i], key, &num);
         }
     }
     return 0;

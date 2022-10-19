@@ -3,18 +3,18 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-int checking_key(char *argv, char **key, int *pattern);
+int data_key(char *argv, char **key, int *pattern);
 int checking_file(char *argv);
 void string_selection(char *pattern_str, char *argv, int *argc, int *pattern);
 int checking_string(char *pattern_str, char *choice_str);
 void output(char *choice_str, char *argv, int **argc, int **pattern);
 
-int checking_key(char *argv, char **key, int *pattern) {
+int data_key(char *argv, char **key, int *pattern) {
     int flag = 2;
     if(argv[0] == '-') {
         *key = argv;
-        flag = 3;
         *pattern = 2;
+        flag = 3;
     }
     return flag;
 }
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
     int pattern = 1;
     char *key = "0";
     for(size_t i = 0; argv[i] != NULL && key[0] != '-'; i++) {
-        arguments = checking_key(argv[i], &key, &pattern);
+        arguments = data_key(argv[i], &key, &pattern);
     }
     for(; argv[arguments] != NULL; arguments++) {
         if(checking_file(argv[arguments]) == 0) {
