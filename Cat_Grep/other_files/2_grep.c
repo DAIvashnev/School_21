@@ -3,19 +3,23 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-void check_key(char *argv, char **key);
-int cheking_file(char *argv);
-void string_selection(char *search_str, char *argv, int *argc);
-int check_search(char *search_str, char *choice_str, char *argv);
-void output(char *choice_str, char *argv, int **argc);
+int data_key(char *argv, char **key, int *pattern);
+int checking_file(char *argv);
+void string_selection(char *pattern_str, char *argv, int *argc, int *pattern);
+int checking_string(char *pattern_str, char *choice_str);
+void output(char *choice_str, char *argv, int **argc, int **pattern);
 
-void check_key(char *argv, char **key) {
+int data_key(char *argv, char **key, int *pattern) {
+    int flag = 2;
     if(argv[0] == '-') {
         *key = argv;
+        *pattern = 2;
+        flag = 3;
     }
+    return flag;
 }
 
-int cheking_file(char *argv) {
+int checking_file(char *argv) {
     FILE *fp;
     int flag = 0;
     if((fp = fopen(argv, "r")) == NULL) {
@@ -27,7 +31,7 @@ int cheking_file(char *argv) {
     return flag;
 }
 
-void string_selection(char *search_str, char *argv, int *argc) {
+void string_selection(char *pattern_str, char *argv, int *argc, int *pattern) {
     FILE *fp;
     int c;
     char *choice_str = NULL;
@@ -39,31 +43,31 @@ void string_selection(char *search_str, char *argv, int *argc) {
         i++;
         if(c == '\n') {
             choice_str[i] = '\0';
-            if(check_search(search_str, choice_str, argv) == 1) {
-                output(choice_str, argv, &argc);
+            if(checking_string(pattern_str, choice_str) == 1) {
+                output(choice_str, argv, &argc, &pattern);
             }
             i = 0;
         }
     }
     choice_str[i] = '\n';
     choice_str[i+1] = '\0';
-    if(check_search(search_str, choice_str, argv) == 1) {
-        output(choice_str, argv, &argc);
+    if(checking_string(pattern_str, choice_str) == 1) {
+        output(choice_str, argv, &argc, &pattern);
     }
     free(choice_str);
     fclose(fp);
 }
 
-int check_search(char *search_str, char *choice_str, char *argv) {
+int checking_string(char *pattern_str, char *choice_str) {
     size_t j = 0;
     int flag = 0;
     char *check_str = NULL;
-    for(int i = 0; choice_str[i] != '\0'; i++) {
-        if(choice_str[i] == search_str[j]) {
+    for(size_t i = 0; choice_str[i] != '\0'; i++) {
+        if(choice_str[i] == pattern_str[j]) {
             check_str = realloc(check_str, (j + 1) * sizeof(char));
-            check_str[j] = search_str[j];
+            check_str[j] = pattern_str[j];
             j++;
-            if(strlen(search_str) == j && strcmp(search_str, check_str) == 0) {
+            if(strlen(pattern_str) == j && strcmp(pattern_str, check_str) == 0) {
                 flag = 1;
             }
         } else {
@@ -75,9 +79,8 @@ int check_search(char *search_str, char *choice_str, char *argv) {
     return flag;
 }
 
-void output(char *choice_str, char *argv, int **argc) {
-    int check_flag = 0;
-    if(**argc > 3) {
+void output(char *choice_str, char *argv, int **argc, int **pattern) {
+    if((**argc > 3 && **pattern == 1) || (**argc > 4 && **pattern == 2)) {
         printf("%s:%s", argv, choice_str);
     } else {
         printf("%s", choice_str);
@@ -86,21 +89,15 @@ void output(char *choice_str, char *argv, int **argc) {
 
 int main(int argc, char *argv[]) {
     int arguments = 0;
+    int pattern = 1;
     char *key = "0";
-    while(argv[arguments]) {
-        check_key(argv[arguments], &key);
-        arguments++;
+    for(size_t i = 0; argv[i] != NULL && key[0] != '-'; i++) {
+        arguments = data_key(argv[i], &key, &pattern);
     }
-    if(key[0] == '-') { 
-        arguments = 3; 
-    } else { 
-        arguments = 2; 
-    }
-    while(argv[arguments]) {
-        if(cheking_file(argv[arguments]) == 0) {
-            string_selection(argv[1], argv[arguments], &argc);
+    for(; argv[arguments] != NULL; arguments++) {
+        if(checking_file(argv[arguments]) == 0) {
+            string_selection(argv[pattern], argv[arguments], &argc, &pattern);
         }
-        arguments++;
     }
     return 0;
 }
