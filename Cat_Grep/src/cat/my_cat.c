@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 int data_key(char *argv, char **key);
+void check_gnu_key(char **key);
 int checking_key(char *argv, char *key);
 void show_nonprinting(char *argv, int *c, char *key);
 void output(char *argv, char *key, int *num);
@@ -16,11 +17,38 @@ int data_key(char *argv, char **key) {
     return flag;
 }
 
+void check_gnu_key(char **key) {
+    char *b = "--number-nonblank";
+    char *v = "--show-nonprinting";
+    char *E = "--show-ends";
+    char *n = "--number";
+    char *s = "--squeeze-blank";
+    char *T = "--show-tabs";
+    if(strcmp(*key, b) == 0) {
+        *key = "-b\0";
+    }
+    if(strcmp(*key, v) == 0) {
+        *key = "-v\0";
+    }
+    if(strcmp(*key, E) == 0) {
+        *key = "-E\0";
+    }
+    if(strcmp(*key, n) == 0) {
+        *key = "-n\0";
+    }
+    if(strcmp(*key, s) == 0) {
+        *key = "-s\0";
+    }
+    if(strcmp(*key, T) == 0) {
+        *key = "-T\0";
+    }
+}
+
 int checking_key(char *argv, char *key) {
     FILE *ch;
     int flag = 0;
     if(key[2] == 0 && key[0] != '0') {
-        if(!(key[1] == 'b' || key[1] == 'n' || key[1] == 's' || key[1] == 'e' || key[1] == 'v' || key[1] == 't')) {
+        if(!(key[1] == 'b' || key[1] == 'n' || key[1] == 's' || key[1] == 'e' || key[1] == 'E' || key[1] == 'v' || key[1] == 't' || key[1] == 'T')) {
             printf("my_cat: invalid key - «%s»\n", key);
             flag = 1;
         }
@@ -103,6 +131,23 @@ void output(char *argv, char *key, int *num) {
             }
         }
         fclose(fp);
+    } else if(key[1] == 'E') {
+        while((c = getc(fp)) != EOF) {
+            if(c == '\n') {
+                printf("$");
+            } 
+            putc(c, stdout);
+        }
+        fclose(fp);
+    } else if(key[1] == 'T') {
+        while((c = getc(fp)) != EOF) {
+            if(c == '\t') {
+                c = 73;
+                printf("^");
+            } 
+            putc(c, stdout);
+        }
+        fclose(fp);
     } else if(key[1] == 'e' || key[1] == 'v' || key[1] == 't') {
         show_nonprinting(argv, &c, key);
     } else {
@@ -120,6 +165,7 @@ int main(int argc, char *argv[]) {
     for(size_t i = 0; argv[i] != NULL && key[0] != '-'; i++) {
         result_key = data_key(argv[i], &key);
     }
+    check_gnu_key(&key);
     if(result_key == 1) {
         for(size_t i = 2; argv[i] != NULL && checking_key(argv[i], key) != 1; i++) {
             output(argv[i], key, &num);

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 int data_key(char *argv, char **key, int *pattern);
+int checking_key(char *key);
 int checking_file(char *argv);
 void string_selection(char *pattern_str, char *argv, int *argc, int *pattern);
 int checking_string(char *pattern_str, char *choice_str);
@@ -15,6 +16,20 @@ int data_key(char *argv, char **key, int *pattern) {
         *key = argv;
         *pattern = 2;
         flag = 3;
+    }
+    return flag;
+}
+
+int checking_key(char *key) {
+    int flag = 0;
+    if(key[2] == 0 && key[0] != '0') {
+        if(!(key[1] == 'i')) {
+            printf("my_grep: invalid key - «%s»\n", key);
+            flag = -1;
+        }
+    } else if(key[0] != '0') {
+        printf("my_grep: invalid key - «%s»\n", key);
+        flag = -1;
     }
     return flag;
 }
@@ -94,7 +109,7 @@ int main(int argc, char *argv[]) {
     for(size_t i = 0; argv[i] != NULL && key[0] != '-'; i++) {
         arguments = data_key(argv[i], &key, &pattern);
     }
-    for(; argv[arguments] != NULL; arguments++) {
+    for(; argv[arguments] != NULL && checking_key(key) == 0; arguments++) {
         if(checking_file(argv[arguments]) == 0) {
             string_selection(argv[pattern], argv[arguments], &argc, &pattern);
         }

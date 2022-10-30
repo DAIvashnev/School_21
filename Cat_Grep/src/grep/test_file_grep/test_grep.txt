@@ -1,12 +1,12 @@
 Hello World ! ! !
 It's my first project in language C.
 Task the project:
-1 projec
-
-2 projectHello World
-
-3 ProjecTHello World
 To write my Cat and Grep. project
+!!! miss projec
+
+!!! standart !!! projectHello World
+
+!!! -i !!! ProJecT Hello World
 
 one two three
 seven eight one eight three

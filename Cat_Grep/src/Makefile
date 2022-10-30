@@ -1,20 +1,20 @@
-SRC_C = my_cat.c
-SRC_G = my_grep.c
-NAME_C = cat_21
-NAME_G = grep_21
+SRC_C = cat/my_cat.c
+SRC_G = grep/my_grep.c
+NAME_C = s21_cat
+NAME_G = s21_grep
 NAME_TC = cat_test
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -c
 
-all: cat grep
+all: s21_cat s21_grep
 
-cat: $(SRC_C)
+s21_cat: $(SRC_C)
 	$(CC) $(CFLAGS) $(SRC_C)
 	$(CC) my_cat.o -o $(NAME_C)
 	cp test_file_cat/bash_cat.sh ./
 	cp test_file_cat/ascii.txt ./
 
-grep: $(SRC_G)
+s21_grep: $(SRC_G)
 	$(CC) $(CFLAGS) $(SRC_G)
 	$(CC) my_grep.o -o $(NAME_G)
 
