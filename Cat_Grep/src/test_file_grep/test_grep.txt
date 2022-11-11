@@ -8,6 +8,8 @@ To write my Cat and Grep. project
 
 !!! -i !!! ProJecT Hello World
 
+-project
+
 one two three
 seven eight one eight three
 thirteen fourteen fifteen
@@ -26,4 +28,5 @@ twenty1
 twenty3
 twenty5
 twenty7
+Сегодня 11 февраля 1992 г.
 !!! -i !!! ProJecT Hello World
