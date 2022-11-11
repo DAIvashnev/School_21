@@ -1,4 +1,4 @@
-#include "header.h"
+#include "struct.h"
 
 int data_key(char *argv, t_flags *countData) {
     int flag = 0;

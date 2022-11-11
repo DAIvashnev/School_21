@@ -1,5 +1,5 @@
 #ifndef  SRC_1HEADER_H
-#define  SRC_HEADER_H
+#define  SRC_1HEADER_H
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -13,8 +13,9 @@ typedef struct s_st{
     int c;
     int l;
     int n;
-    int countArgument;
     int error_options;
+    int stopPattern;
+    int countArgument;
     char *key;
     char *pattern;
     char *file; 
@@ -26,7 +27,8 @@ void parsingData(char *argv, t_st *structData);
 void data_key(char *argv, t_st *structData);
 void checking_key(t_st *structData);
 void data_pattern(char *argv, t_st *structData);
+void data_file(char *argv, t_st *structData);
 
 void free_data(t_st *structData);
 
-#endif // SRC_HEADER_H
+#endif // SRC_1HEADER_H
