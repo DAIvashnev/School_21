@@ -32,6 +32,11 @@ void data_file(char *argv, t_st *structData);
 void regexData(regex_t *re, int *error_regex, t_st *structData);
 int checking_file(t_st *countData, int *countFile);
 void search_matches(regex_t *re, regmatch_t *match, int *error_regex, t_st *structData);
+void output_v(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex);
+void output_c(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex);
+void output_l(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex);
+void output_n(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex);
+
 int data_argv_e(char *argv, t_st *structData);
 void output(t_st *structData);
 

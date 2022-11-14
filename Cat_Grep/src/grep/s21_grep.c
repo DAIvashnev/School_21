@@ -83,13 +83,13 @@ void search_matches(regex_t *re, regmatch_t *match, int *error_regex, t_st *stru
     int check_len;
     fp = fopen(structData->check_file, "r");
     if(structData->v == 1) {
-        //output_v(fp, structData->check_file, structData, re, match, error_regex);
+        output_v(fp, structData, re, match, error_regex);
     } else if(structData->c == 1) {
-        //output_c(fp, structData->check_file, structData, re, match, error_regex);
+        output_c(fp, structData, re, match, error_regex);
     } else if(structData->l == 1) {
-        //output_l(fp, structData->check_file, structData, re, match, error_regex);
+        output_l(fp, structData, re, match, error_regex);
     } else if(structData->n == 1) {
-        //output_n(fp, structData->check_file, structData, re, match, error_regex);
+        output_n(fp, structData, re, match, error_regex);
     } else {
         while(fgets(structData->check_str, 256, fp) != NULL) {
             if((*error_regex = regexec(re, structData->check_str, 0, match, 0)) == 0) {
@@ -103,6 +103,58 @@ void search_matches(regex_t *re, regmatch_t *match, int *error_regex, t_st *stru
         }
     }
     fclose(fp);
+}
+
+void output_v(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex) {
+    int check_len;
+    while(fgets(structData->check_str, 256, fp) != NULL) {
+        if((*error_regex = regexec(re, structData->check_str, 0, match, 0)) != 0) {
+            if(strcmp(structData->check_str, structData->pattern) != 0) {
+                check_len = strlen(structData->check_str);
+                output(structData);
+                if(structData->check_str[check_len-1] != '\n') {
+                    printf("\n");
+                }
+            }
+        }
+    }
+}
+
+void output_c(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex) {
+    int count = 0;
+    while(fgets(structData->check_str, 256, fp) != NULL) {
+        if((*error_regex = regexec(re, structData->check_str, 0, match, 0)) == 0) {
+            count += 1;
+        }
+    }
+    if(structData->countArgument > 3) {
+        printf("%s:%d\n", structData->check_file, count);
+    } else {
+        printf("%d\n", count);
+    }
+}
+
+void output_l(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex) {
+    while(fgets(structData->check_str, 256, fp) != NULL) {
+        if((*error_regex = regexec(re, structData->check_str, 0, match, 0)) == 0) {
+            printf("%s\n", structData->check_file);
+            break;
+        }
+    }
+}
+
+void output_n(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex) {
+    int count = 0;
+    while(fgets(structData->check_str, 256, fp) != NULL) {
+        count += 1;
+        if((*error_regex = regexec(re, structData->check_str, 0, match, 0)) == 0) {
+            if(structData->countArgument > 3) {
+                printf("%s:%d:%s", structData->check_file, count, structData->check_str);
+            } else {
+                printf("%d:%s", count, structData->check_str);
+            }
+        }
+    }
 }
 
 int data_argv_e(char *argv, t_st *structData) {
@@ -159,8 +211,11 @@ int main (int argc, char *argv[]) {
         for(size_t i = 1; argv[i] != NULL; i++) {
             if ((argv[i][0] == '-' && argv[i][1] == 'e' && argv[i][2] != 0) || (argv[i-1][1] == 'e' && argv[i-1][2] == 0)) {
                 data_argv_e(argv[i], &structData);
-            } else if(argv[i][1] != 'e') {
+            } else if(argv[i][1] != 'e' && argv[i][0] != '-') {
                 data_file(argv[i], &structData);
+            } 
+            if(argv[i][0] == '-' && argv[i][1] != 'e' && argv[i-1][0] != '-' && argv[i-1][1] != 'e') {
+                data_key(argv[i], &structData);
             }
         }
         structData.pattern[strlen(structData.pattern)-1] = '\0';
@@ -178,8 +233,8 @@ int main (int argc, char *argv[]) {
 
     //printf("%s\n%s\n-%s-\n%d\n", structData.key, structData.pattern, structData.file, structData.countArgument); //временно
     //printf("\n-%s-\n", structData.str_file); //временно
-    printf("\n________________________________\n-%s-\n", structData.pattern); //временно
-    printf("\n-%s-\n", structData.file); //временно
+    //printf("\n________________________________\n-%s-\n", structData.pattern); //временно
+    //printf("\n-%s-\n", structData.file); //временно
     printf("\n-%d-\n", structData.countArgument); //временно
     printf("%d\n", arc);        //временно
     regfree(&re);
