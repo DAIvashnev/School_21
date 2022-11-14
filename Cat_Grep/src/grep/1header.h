@@ -21,8 +21,6 @@ typedef struct s_st{
     char *file; 
     char *check_file;
     char *check_str;
-    //char *str_file;
-    //char *open_file;
 } t_st ;
 
 void s21_in_Struct(t_st *structData);
@@ -34,6 +32,7 @@ void data_file(char *argv, t_st *structData);
 void regexData(regex_t *re, int *error_regex, t_st *structData);
 int checking_file(t_st *countData, int *countFile);
 void search_matches(regex_t *re, regmatch_t *match, int *error_regex, t_st *structData);
+int data_argv_e(char *argv, t_st *structData);
 void output(t_st *structData);
 
 void free_data(t_st *structData);

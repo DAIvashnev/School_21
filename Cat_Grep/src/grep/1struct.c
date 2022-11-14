@@ -15,8 +15,6 @@ void s21_in_Struct(t_st *structData) {
     structData->file = calloc(1000, sizeof(char));
     structData->check_file = calloc(1000, sizeof(char));
     structData->check_str = calloc(1000, sizeof(char));
-    //structData->str_file = calloc(1000, sizeof(char));
-    //structData->open_file = calloc(1000, sizeof(char));
 }
 
 void free_data(t_st *structData) {
@@ -25,6 +23,4 @@ void free_data(t_st *structData) {
     free(structData->file);
     free(structData->check_file);
     free(structData->check_str);
-    //free(structData->str_file);
-    //free(structData->open_file);
 }
