@@ -13,9 +13,11 @@ typedef struct s_st{
     int c;
     int l;
     int n;
+    int help_grep;
     int error_options;
     int stopPattern;
     int countArgument;
+    int check_len;
     char *key;
     char *pattern;
     char *file; 
@@ -23,6 +25,7 @@ typedef struct s_st{
     char *check_str;
 } t_st ;
 
+void s21_grep_help(t_st *structData);
 void s21_in_Struct(t_st *structData);
 void parsingData(char *argv, t_st *structData);
 void data_key(char *argv, t_st *structData);
@@ -36,10 +39,8 @@ void output_v(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *e
 void output_c(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex);
 void output_l(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex);
 void output_n(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex);
-
 int data_argv_e(char *argv, t_st *structData);
 void output(t_st *structData);
-
 void free_data(t_st *structData);
 
 #endif // SRC_1HEADER_H
