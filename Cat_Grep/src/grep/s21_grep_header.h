@@ -40,7 +40,7 @@ void output_v(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *e
 void output_c(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex);
 void output_l(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex);
 void output_n(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex);
-int data_argv_e(char *argv, t_st *structData);
+int data_argv_e(const char *argv, t_st *structData);
 void output(t_st *structData);
 void count_output(t_st *structData);
 void free_data(t_st *structData);

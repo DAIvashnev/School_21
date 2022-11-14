@@ -14,7 +14,7 @@ void s21_grep_help(t_st *structData) {
 void parsingData(char *argv, t_st *structData) {
     if(argv[0] == '-') {
         data_key(argv, structData);
-    } else if(argv[0] != '-' && structData->stopPattern == 0) {
+    } else if(structData->stopPattern == 0) {
         data_pattern(argv, structData);
     } else {
         data_file(argv, structData);
@@ -70,7 +70,7 @@ int checking_file(t_st *structData, int *countFile) {
     FILE *fp;
     int flag = 0;
     int j = 0;
-    while((structData->file[*countFile] != ' ' || structData->file[*countFile] != '\0') && flag == 0) {
+    while((structData->file[*countFile] != '\0') && flag == 0) {
         structData->check_file[j] = structData->file[*countFile];
         j++;
         *countFile += 1;
@@ -161,13 +161,12 @@ void output_n(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *e
     structData->countOutput = 0;
 }
 
-int data_argv_e(char *argv, t_st *structData) {
+int data_argv_e(const char *argv, t_st *structData) {
     int flag = 0;
     int len = 0;
-    int i = 0;
-    int j = 2;
     len = strlen(structData->pattern);
     if(argv[0] == '-' && argv[1] == 'e' && argv[2] != 0) {
+        int j = 2;
         while(argv[j] != '\0') {
             structData->pattern[len] = argv[j];
             len++;
@@ -175,6 +174,7 @@ int data_argv_e(char *argv, t_st *structData) {
         }
         structData->pattern[len] = '|';
     } else {
+        int i = 0;
         while(argv[i] != '\0') {
             structData->pattern[len] = argv[i];
             len++;
