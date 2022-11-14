@@ -92,19 +92,19 @@ int checking_file(t_st *structData, int *countFile) {
 void search_matches(regex_t *re, regmatch_t *match, int *error_regex, t_st *structData) {
     FILE *fp;
     fp = fopen(structData->check_file, "r");
-    if(structData->v == 1) {
+    if(structData->v == 1 && structData->c == 0 && structData->l == 0) {
         output_v(fp, structData, re, match, error_regex);
-    } else if(structData->c == 1) {
+    } else if(structData->c == 1 && structData->l == 0) {
         output_c(fp, structData, re, match, error_regex);
     } else if(structData->l == 1) {
         output_l(fp, structData, re, match, error_regex);
-    } else if(structData->n == 1) {
+    } else if(structData->n == 1 && structData->v == 0) {
         output_n(fp, structData, re, match, error_regex);
     } else {
         while(fgets(structData->check_str, 256, fp) != NULL) {
             if((*error_regex = regexec(re, structData->check_str, 0, match, 0)) == 0) {
-                structData->check_len = strlen(structData->check_str);
                 output(structData);
+                structData->check_len = strlen(structData->check_str);
                 if(structData->check_str[structData->check_len-1] != '\n') {
                     printf("\n");
                 }
@@ -118,10 +118,15 @@ void search_matches(regex_t *re, regmatch_t *match, int *error_regex, t_st *stru
 
 void output_v(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex) {
     while(fgets(structData->check_str, 256, fp) != NULL) {
+        structData->countOutput += 1;
         if((*error_regex = regexec(re, structData->check_str, 0, match, 0)) != 0) {
             if(strcmp(structData->check_str, structData->pattern) != 0) {
+                if(structData->n == 1) {
+                    count_output(structData);
+                } else {
+                    output(structData);
+                }
                 structData->check_len = strlen(structData->check_str);
-                output(structData);
                 if(structData->check_str[structData->check_len-1] != '\n') {
                     printf("\n");
                 }
@@ -129,20 +134,23 @@ void output_v(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *e
             }
         }
     }
+    structData->countOutput = 0;
 }
 
 void output_c(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex) {
-    int count = 0;
     while(fgets(structData->check_str, 256, fp) != NULL) {
-        if((*error_regex = regexec(re, structData->check_str, 0, match, 0)) == 0) {
-            count += 1;
+        if((*error_regex = regexec(re, structData->check_str, 0, match, 0)) == 0 && structData->v == 0) {
+            structData->countOutput += 1;
+        } else if ((*error_regex = regexec(re, structData->check_str, 0, match, 0)) != 0 &&structData->v == 1) {
+            structData->countOutput += 1;
         }
     }
     if(structData->countArgument > 1) {
-        printf("%s:%d\n", structData->check_file, count);
+        printf("%s:%d\n", structData->check_file, structData->countOutput);
     } else {
-        printf("%d\n", count);
+        printf("%d\n", structData->countOutput);
     }
+    structData->countOutput = 0;
 }
 
 void output_l(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex) {
@@ -155,22 +163,18 @@ void output_l(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *e
 }
 
 void output_n(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex) {
-    int count = 0;
     while(fgets(structData->check_str, 256, fp) != NULL) {
-        count += 1;
+        structData->countOutput += 1;
         if((*error_regex = regexec(re, structData->check_str, 0, match, 0)) == 0) {
-            if(structData->countArgument > 1) {
-                printf("%s:%d:%s", structData->check_file, count, structData->check_str);
-            } else {
-                printf("%d:%s", count, structData->check_str);
-            }
-            structData->check_len = strlen(structData->check_str);
-            if(structData->check_str[structData->check_len-1] != '\n') {
-                printf("\n");
-            }
-            structData->check_len = 0;
+            count_output(structData);
         }
+        structData->check_len = strlen(structData->check_str);
+        if(structData->check_str[structData->check_len-1] != '\n' /*&& structData->check_str[structData->check_len] != '\0'*/) {
+            printf("\n");
+        }
+        structData->check_len = 0;
     }
+    structData->countOutput = 0;
 }
 
 int data_argv_e(char *argv, t_st *structData) {
@@ -202,6 +206,14 @@ void output(t_st *structData) {
         printf("%s:%s", structData->check_file, structData->check_str);
     } else {
         printf("%s", structData->check_str);
+    }
+}
+
+void count_output(t_st *structData) {
+    if(structData->countArgument > 1) {
+        printf("%s:%d:%s", structData->check_file, structData->countOutput, structData->check_str);
+    } else {
+        printf("%d:%s", structData->countOutput, structData->check_str);
     }
 }
 

@@ -11,6 +11,7 @@ void s21_in_Struct(t_st *structData) {
     structData->error_options = 0;
     structData->stopPattern = 0;
     structData->countArgument = 0;
+    structData->countOutput = 0;
     structData->check_len = 0;
     structData->key = calloc(256, sizeof(char));
     structData->pattern = calloc(256, sizeof(char));
