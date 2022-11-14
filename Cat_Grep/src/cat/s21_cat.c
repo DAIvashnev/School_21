@@ -1,4 +1,4 @@
-#include "header.h"
+#include "s21_cat_header.h"
 
 int data_key(char *argv, char **key) {
     int flag = 0;

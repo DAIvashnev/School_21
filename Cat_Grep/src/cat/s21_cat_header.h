@@ -1,5 +1,5 @@
-#ifndef  SRC_HEADER_H
-#define  SRC_HEADER_H
+#ifndef  SRC_S21_CAT_HEADER_H
+#define  SRC_S21_CAT_HEADER_H
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -16,4 +16,4 @@ void output_E(int *c, FILE *fp);
 void output_T(int *c, FILE *fp);
 void output(char *argv, char *key);
 
-#endif // SRC_HEADER_H
+#endif // SRC_S21_CAT_HEADER_H
