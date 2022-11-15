@@ -7,6 +7,7 @@ void s21_in_Struct(t_st *structData) {
     structData->c = 0;
     structData->l = 0;
     structData->n = 0;
+    structData->o = 0;
     structData->help_grep = 0;
     structData->error_options = 0;
     structData->stopPattern = 0;
@@ -15,6 +16,8 @@ void s21_in_Struct(t_st *structData) {
     structData->check_len = 0;
     structData->key = calloc(256, sizeof(char));
     structData->pattern = calloc(256, sizeof(char));
+    structData->o_pattern = calloc(256, sizeof(char));
+    structData->o_search = calloc(256, sizeof(char));
     structData->file = calloc(1000, sizeof(char));
     structData->check_file = calloc(1000, sizeof(char));
     structData->check_str = calloc(1000, sizeof(char));
@@ -26,4 +29,6 @@ void free_data(t_st *structData) {
     free(structData->file);
     free(structData->check_file);
     free(structData->check_str);
+    free(structData->o_pattern);
+    free(structData->o_search);
 }
