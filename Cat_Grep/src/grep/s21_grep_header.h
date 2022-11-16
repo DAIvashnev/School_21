@@ -15,6 +15,7 @@ typedef struct s_st{
     int l;
     int n;
     int o;
+    int h;
     int help_grep;
     int error_options;
     int stopPattern;

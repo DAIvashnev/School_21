@@ -8,6 +8,7 @@ void s21_in_Struct(t_st *structData) {
     structData->l = 0;
     structData->n = 0;
     structData->o = 0;
+    structData->h = 0;
     structData->help_grep = 0;
     structData->error_options = 0;
     structData->stopPattern = 0;

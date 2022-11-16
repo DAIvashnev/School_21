@@ -38,6 +38,7 @@ void checking_key(t_st *structData) {
             case 'l' : structData->l = 1; break;
             case 'n' : structData->n = 1; break;
             case 'o' : structData->o = 1; break;
+            case 'h' : structData->h = 1; break;
             default : {
                 printf("my_grep: invalid key - «%c»\n", structData->key[i]); 
                 structData->error_options = -1;
@@ -141,7 +142,7 @@ void output_c(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *e
             structData->countOutput += 1;
         }
     }
-    if(structData->countArgument > 1) {
+    if(structData->countArgument > 1 && structData->h == 0) {
         printf("%s:%d\n", structData->check_file, structData->countOutput);
     } else {
         printf("%d\n", structData->countOutput);
@@ -170,8 +171,8 @@ void output_n(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *e
 
 void output_o(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *error_regex) {
     char check[256];
+    int x = 0;
     int j = 0;
-    char *r;
     while(fgets(structData->check_str, 256, fp) != NULL) {
         structData->countOutput += 1;
         if((*error_regex = regexec(re, structData->check_str, 0, match, 0)) == 0) {
@@ -180,32 +181,35 @@ void output_o(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match, int *e
                 j++;
                 if(structData->o_pattern[i+1] == '|' || structData->o_pattern[i+1] == '\0') {
                     check[j] = '\0';
-                    if((r = strchr(structData->check_str, toupper(check[0]))) != NULL || (r = strchr(structData->check_str, tolower(check[0]))) != NULL) {
-                        j = 0;
-                        while(check[j] != '\0') {
-                            if(structData->i == 1) {
-                                if(toupper(check[j]) == r[j]) {
-                                    structData->o_search[j] = r[j];
-                                } else if(tolower(check[j]) == r[j]) {
-                                    structData->o_search[j] = r[j];
-                                }
+                    for(int k = 0; structData->check_str[k] != '\0'; k++) {
+                        if(structData->i == 1) {
+                            if(toupper(check[x]) == structData->check_str[k] || tolower(check[x]) == structData->check_str[k]) {
+                                structData->o_search[x] = structData->check_str[k];
+                                x++;
                             } else {
-                                if(check[j] == r[j]) {
-                                    structData->o_search[j] = r[j];
+                                x = 0;
+                                structData->o_search[x] = '\0';
+                            }
+                        } else {
+                            if(check[x] == structData->check_str[k]) {
+                                structData->o_search[x] = structData->check_str[k];
+                                x++;
+                            } else {
+                                x = 0;
+                                structData->o_search[x] = '\0';
+                            }
+                        }
+                        if(check[x] == '\0') {
+                            structData->o_search[x] = '\0';
+                            x = 0;
+                            if(strcasecmp(structData->o_search, check) == 0) {
+                                if(structData->n == 1) {
+                                    count_output(structData);
+                                } else {
+                                    output(structData);
                                 }
                             }
-                            j++;
-                        }
-                        structData->o_search[j] = '\0';
-                        if(strcasecmp(structData->o_search, check) == 0) {
-                            if(structData->n == 1) {
-                                count_output(structData);
-                            } else {
-                                output(structData);
-                            }
-                            j = 0;
-                            break;
-                        }
+                        } 
                     }
                     j = 0;
                     i++;
@@ -249,7 +253,7 @@ int data_argv_e(char *argv, t_st *structData) {
 }
 
 void output(t_st *structData) {
-    if(structData->countArgument > 1) {
+    if(structData->countArgument > 1 && structData->h == 0) {
         if(structData->o == 1 && structData->v == 0 && structData->c == 0 && structData->l == 0) {
             printf("%s:%s\n", structData->check_file, structData->o_search);
         } else {
@@ -272,7 +276,7 @@ void output(t_st *structData) {
 }
 
 void count_output(t_st *structData) {
-    if(structData->countArgument > 1) {
+    if(structData->countArgument > 1 && structData->h == 0) {
         if(structData->o == 1 && structData->v == 0 && structData->c == 0 && structData->l == 0) {
             printf("%s:%d:%s\n", structData->check_file, structData->countOutput, structData->o_search);
         } else {
@@ -300,13 +304,13 @@ int main (int argc, char *argv[]) {
     regex_t re;
     regmatch_t match;
     int error_regex;
-    //проверка на опцию -е
+
     for(size_t i = 1; argv[i] != NULL; i++) {
         if(argv[i][0] == '-' && argv[i][1] == 'e') {
             structData.e = 1;
         }
     }
-    //парсирование данных в зависимости от опции -е
+
     if(structData.e == 0) {
         for(size_t i = 1; argv[i] != NULL && structData.error_options == 0; i++) {
             parsingData(argv[i], &structData);
@@ -324,7 +328,7 @@ int main (int argc, char *argv[]) {
         structData.o_pattern[strlen(structData.o_pattern)-1] = '\0';
         structData.pattern[strlen(structData.pattern)-1] = '\0';
     }
-    //вывод найденных совпадений, если путь к файлу существует
+
     if(structData.countArgument != 0) {
         regexData(&re, &error_regex, &structData);
         int countFile = 0;
