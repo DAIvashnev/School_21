@@ -1,16 +1,19 @@
 Hello World ! ! !
 It's my first project in language C.
-Task the project:
-To write my Cat and Grep. project
-!!! miss projec
-
-!!! standart !!! projectHello World
+!!! miss proj
 
 !!! -i !!! ProJecT Hello World
 
 -project
 
+PROJECT
+
+zazazaZA
+
 one two three
+
+qp lal
+
 seven eight one eight three
 thirteen fourteen fifteen
 
@@ -29,5 +32,5 @@ twenty3
 twenty5
 twenty7
 Сегодня 11 февраля 1992 г.
-!!! -i !!! ProJecT Hello World
-TWO
+Z
+TWO three
