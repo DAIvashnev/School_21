@@ -9,15 +9,20 @@ all: s21_cat
 s21_cat: $(SRC)
 	$(CC) $(CFLAGS) $(SRC)
 	$(CC) s21_cat.o -o $(NAME)
-	cp ../test_file_cat/bash_cat.sh ./
-	cp ../test_file_cat/ascii.txt ./
+
+cpp:
+	cppcheck --enable=all --suppress=missingIncludeSystem *.c *.h
+
+cl:
+	clang-format -style=google -n *.c *.h
 
 clean:
 	rm -rf s21_cat.o
 	rm -rf ascii.txt
 	rm -rf bash_cat.sh
+	rm -rf empty_file.txt
 	rm -rf $(NAME)
 	rm -rf $(TEST)
 
-rebuild: fclean
+rebuild: clean
 	make

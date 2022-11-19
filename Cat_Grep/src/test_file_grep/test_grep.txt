@@ -10,6 +10,12 @@ PROJECT
 
 zazazaZA
 
+twenty4$
+
+MWO
+
+^TWO
+
 one two three
 
 qp lal
@@ -21,7 +27,7 @@ thirteen fourteen fifteen
 sixteen seventeen eighteen
         twenty seven
 one 504 one
-one 503 one
+one 503 one seVEn
 one     504     one
 one     504 one
 #comment UP
@@ -29,6 +35,7 @@ twentyseven
         #comment down
 twenty1
 twenty3
+SEVEN
 twenty5
 twenty7
 Сегодня 11 февраля 1992 г.
