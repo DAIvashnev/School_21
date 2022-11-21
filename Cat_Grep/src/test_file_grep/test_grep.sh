@@ -150,8 +150,9 @@ do
 
 done
 
+echo -e "\n"
 valgrind ./s21_grep -e-project -e "Hello World ! ! !" test_grep.txt empty_file.txt test_grep.txt -f ff.txt -o
-
+echo -e "\n"
 valgrind ./s21_grep -e \\^ -e ^h -e 3$ test_grep.txt empty_file.txt test_grep.txt -e 4\\$ -o
-
+echo -e "\n"
 valgrind ./s21_grep -f f.txt -f empty_file.txt -f ff.txt test_grep.txt empty_file.txt test_grep.txt -f f.txt -o

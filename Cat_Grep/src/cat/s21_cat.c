@@ -181,20 +181,24 @@ void output(char *argv, char *key) {
 }
 
 int main(int argc, char *argv[]) {
-  int result_key;
-  char *key = "0";
-  result_key = data_key(argv[1], &key);
-  checking_gnu_key(&key);
-  if (result_key == 1) {
-    for (size_t i = 2; i != (size_t)argc && checking_key(key) != 1; i++) {
-      if (checking_file(argv[i]) != 1) {
-        output(argv[i], key);
-      }
-    }
+  if (argc == 1) {
+    printf("Little arguments in s21_cat\n");
   } else {
-    for (size_t i = 1; i != (size_t)argc; i++) {
-      if (checking_file(argv[i]) != 1) {
-        output(argv[i], key);
+    int result_key;
+    char *key = "0";
+    result_key = data_key(argv[1], &key);
+    checking_gnu_key(&key);
+    if (result_key == 1) {
+      for (size_t i = 2; i != (size_t)argc && checking_key(key) != 1; i++) {
+        if (checking_file(argv[i]) != 1) {
+          output(argv[i], key);
+        }
+      }
+    } else {
+      for (size_t i = 1; i != (size_t)argc; i++) {
+        if (checking_file(argv[i]) != 1) {
+          output(argv[i], key);
+        }
       }
     }
   }

@@ -62,7 +62,7 @@ void checking_key(t_st *structData) {
         structData->f = 1;
         break;
       default: {
-        printf("my_grep: invalid key - «%c»\n", structData->key[i]);
+        printf("s21_grep: invalid key - «%c»\n", structData->key[i]);
         structData->error_options = -1;
       }
     }
@@ -116,7 +116,7 @@ int checking_file(t_st *structData, int *countFile, int *check_s) {
       }
       if ((fp = fopen(structData->check_file, "r")) == NULL &&
           structData->s != 1) {
-        printf("my_grep: %s: There is no such file or directory\n",
+        printf("s21_grep: %s: There is no such file or directory\n",
                structData->check_file);
         flag = 1;
       } else {
@@ -130,8 +130,16 @@ int checking_file(t_st *structData, int *countFile, int *check_s) {
 
 void search_matches(regex_t *re, regmatch_t *match, int *error_regex,
                     t_st *structData) {
+  int c;
   FILE *fp;
   fp = fopen(structData->check_file, "r");
+  while ((c = getc(fp)) != EOF) {
+    structData->countSTR += 1;
+  }
+  fclose(fp);
+  fp = fopen(structData->check_file, "r");
+  structData->check_str = calloc(structData->countSTR, sizeof(char));
+  structData->o_search = calloc(structData->countSTR, sizeof(char));
   if (structData->v == 1 && structData->c == 0 && structData->l == 0 &&
       structData->o == 0) {
     output_v(fp, structData, re, match, error_regex);
@@ -144,7 +152,7 @@ void search_matches(regex_t *re, regmatch_t *match, int *error_regex,
   } else if (structData->o == 1 && structData->v == 0) {
     output_o(fp, structData, re, match, error_regex);
   } else {
-    while (fgets(structData->check_str, 256, fp) != NULL &&
+    while (fgets(structData->check_str, structData->countSTR, fp) != NULL &&
            structData->v != 1 && structData->o != 1 &&
            structData->empty_file == 0) {
       if ((*error_regex = regexec(re, structData->check_str, 0, match, 0)) ==
@@ -154,11 +162,14 @@ void search_matches(regex_t *re, regmatch_t *match, int *error_regex,
     }
   }
   fclose(fp);
+  free(structData->o_search);
+  free(structData->check_str);
+  structData->countSTR = 0;
 }
 
 void output_v(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match,
               int *error_regex) {
-  while (fgets(structData->check_str, 256, fp) != NULL) {
+  while (fgets(structData->check_str, structData->countSTR, fp) != NULL) {
     structData->countOutput += 1;
     if ((*error_regex = regexec(re, structData->check_str, 0, match, 0)) != 0) {
       if (strcmp(structData->check_str, structData->pattern) != 0) {
@@ -175,7 +186,7 @@ void output_v(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match,
 
 void output_c(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match,
               int *error_regex) {
-  while (fgets(structData->check_str, 256, fp) != NULL) {
+  while (fgets(structData->check_str, structData->countSTR, fp) != NULL) {
     if ((*error_regex = regexec(re, structData->check_str, 0, match, 0)) == 0 &&
         structData->v == 0) {
       structData->countOutput += 1;
@@ -195,7 +206,7 @@ void output_c(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match,
 
 void output_l(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match,
               int *error_regex) {
-  while (fgets(structData->check_str, 256, fp) != NULL) {
+  while (fgets(structData->check_str, structData->countSTR, fp) != NULL) {
     if ((*error_regex = regexec(re, structData->check_str, 0, match, 0)) == 0) {
       printf("%s\n", structData->check_file);
       break;
@@ -205,7 +216,7 @@ void output_l(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match,
 
 void output_n(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match,
               int *error_regex) {
-  while (fgets(structData->check_str, 256, fp) != NULL) {
+  while (fgets(structData->check_str, structData->countSTR, fp) != NULL) {
     structData->countOutput += 1;
     if ((*error_regex = regexec(re, structData->check_str, 0, match, 0)) == 0) {
       count_output(structData);
@@ -218,7 +229,7 @@ void output_o(FILE *fp, t_st *structData, regex_t *re, regmatch_t *match,
               int *error_regex) {
   int x = 0;
   int j = 0;
-  while (fgets(structData->check_str, 256, fp) != NULL) {
+  while (fgets(structData->check_str, structData->countSTR, fp) != NULL) {
     structData->countOutput += 1;
     if ((*error_regex = regexec(re, structData->check_str, 0, match, 0)) == 0) {
       for (int i = 0; structData->o_pattern[i] != '\0'; i++) {
@@ -352,7 +363,7 @@ void data_argv_f(const char *argv, t_st *structData) {
   structData->check_argv_f[i] = '\0';
   struct stat stat_record;
   if ((fp = fopen(structData->check_argv_f, "r")) == NULL) {
-    printf("my_grep: %s: There is no such file or directory\n",
+    printf("s21_grep: %s: There is no such file or directory\n",
            structData->check_argv_f);
     structData->error_f_file = 1;
   }
@@ -432,77 +443,91 @@ void count_output(t_st *structData) {
 }
 
 int main(int argc, char *argv[]) {
-  t_st structData;
-  s21_in_Struct(&structData);
-  regex_t re;
-  regmatch_t match;
-  int error_regex;
-
-  for (size_t i = 1; argv[i] != NULL; i++) {
-    if (argv[i][0] == '-' && argv[i][1] == 'e') {
-      structData.e = 1;
-    }
-    if (argv[i][0] == '-' && argv[i][1] == 'f') {
-      structData.f = 1;
-    }
-  }
-
-  if (structData.f == 1) {
-    for (size_t i = 1; argv[i] != NULL && structData.error_f_file != 1; i++) {
-      if ((argv[i][0] == '-' && argv[i][1] == 'f' && argv[i][2] != 0) ||
-          (argv[i - 1][1] == 'f' && argv[i - 1][2] == 0)) {
-        data_argv_f(argv[i], &structData);
-      }
-    }
-  }
-
-  if (structData.e == 0 && structData.f == 0) {
-    for (size_t i = 1; argv[i] != NULL && structData.error_options == 0; i++) {
-      parsingData(argv[i], &structData);
-    }
+  if (argc == 1) {
+    printf("s21_grep SYNOPSIS: grep [options] PATTERN [FILE...]\n");
   } else {
-    for (size_t i = 1; argv[i] != NULL && structData.error_f_file != 1; i++) {
-      if (argv[i + 1] == NULL && argv[i][0] == '-' &&
-          (argv[i][1] == 'e' || argv[i][1] == 'f') && argv[i][2] == 0) {
-        structData.countArgument = 0;
-      }
+    t_st structData;
+    s21_in_Struct(&structData);
+    regex_t re;
+    regmatch_t match;
+    int error_regex;
 
-      if ((argv[i][0] == '-' && argv[i][1] == 'e') ||
-          (argv[i - 1][0] == '-' && argv[i - 1][1] == 'e' &&
-           argv[i - 1][2] == 0)) {
-        data_argv_e(argv[i], &structData);
-      } else if (argv[i][0] != '-') {
-        if (!((argv[i][0] == '-' && argv[i][1] == 'f' && argv[i][2] != 0) ||
-              (argv[i - 1][1] == 'f' && argv[i - 1][2] == 0)) &&
-            argv[i][1] != 'f') {
-          data_file(argv[i], &structData);
+    for (size_t i = 1; argv[i] != NULL; i++) {
+      if (argv[i][0] == '-' && argv[i][1] == 'e') {
+        structData.e = 1;
+      }
+      if (argv[i][0] == '-' && argv[i][1] == 'f') {
+        structData.f = 1;
+      }
+    }
+
+    structData.key = calloc(**argv, sizeof(char));
+    structData.pattern = calloc(**argv, sizeof(char));
+    structData.file = calloc(**argv, sizeof(char));
+
+    if (structData.f == 1) {
+      structData.check_argv_f = calloc(**argv, sizeof(char));
+      for (size_t i = 1; argv[i] != NULL && structData.error_f_file != 1; i++) {
+        if ((argv[i][0] == '-' && argv[i][1] == 'f' && argv[i][2] != 0) ||
+            (argv[i - 1][1] == 'f' && argv[i - 1][2] == 0)) {
+          data_argv_f(argv[i], &structData);
         }
-      } else if (argv[i][1] != 'e' && argv[i][1] != 'f') {
-        data_key(argv[i], &structData);
       }
     }
-    structData.pattern[strlen(structData.pattern) - 1] = '\0';
-  }
 
-  if (structData.countArgument != 0 && structData.error_f_file != 1) {
-    regexData(&re, &error_regex, &structData);
-    strcat(structData.o_pattern, structData.pattern);
-    int countFile = 0;
-    int check_s = 0;
-    for (size_t i = 0;
-         i != (size_t)structData.countArgument && structData.error_options == 0;
-         i++) {
-      if (checking_file(&structData, &countFile, &check_s) != 1 &&
-          check_s != 1) {
-        search_matches(&re, &match, &error_regex, &structData);
+    if (structData.e == 0 && structData.f == 0) {
+      for (size_t i = 1; argv[i] != NULL && structData.error_options == 0;
+           i++) {
+        parsingData(argv[i], &structData);
       }
-      check_s = 0;
+    } else {
+      for (size_t i = 1; argv[i] != NULL && structData.error_f_file != 1; i++) {
+        if (argv[i + 1] == NULL && argv[i][0] == '-' &&
+            (argv[i][1] == 'e' || argv[i][1] == 'f') && argv[i][2] == 0) {
+          structData.countArgument = 0;
+        }
+
+        if ((argv[i][0] == '-' && argv[i][1] == 'e') ||
+            (argv[i - 1][0] == '-' && argv[i - 1][1] == 'e' &&
+             argv[i - 1][2] == 0)) {
+          data_argv_e(argv[i], &structData);
+        } else if (argv[i][0] != '-') {
+          if (!((argv[i][0] == '-' && argv[i][1] == 'f' && argv[i][2] != 0) ||
+                (argv[i - 1][1] == 'f' && argv[i - 1][2] == 0)) &&
+              argv[i][1] != 'f') {
+            data_file(argv[i], &structData);
+          }
+        } else if (argv[i][1] != 'e' && argv[i][1] != 'f') {
+          data_key(argv[i], &structData);
+        }
+      }
+      structData.pattern[strlen(structData.pattern) - 1] = '\0';
     }
-    regfree(&re);
-    free_data(&structData);
-  } else if (structData.error_f_file != 1) {
-    structData.help_grep = argc;
-    s21_grep_help(argv[1], &structData);
+
+    if (structData.countArgument != 0 && structData.error_f_file != 1) {
+      regexData(&re, &error_regex, &structData);
+      structData.o_pattern = calloc(*structData.pattern, sizeof(char));
+      structData.o_parsing = calloc(*structData.pattern, sizeof(char));
+      structData.check_file = calloc(**argv, sizeof(char));
+      strcat(structData.o_pattern, structData.pattern);
+      int countFile = 0;
+      int check_s = 0;
+      for (size_t i = 0; i != (size_t)structData.countArgument &&
+                         structData.error_options == 0;
+           i++) {
+        if (checking_file(&structData, &countFile, &check_s) != 1 &&
+            check_s != 1) {
+          search_matches(&re, &match, &error_regex, &structData);
+        }
+        check_s = 0;
+      }
+      regfree(&re);
+      free_data(&structData);
+    } else if (structData.error_f_file != 1) {
+      regfree(&re);
+      structData.help_grep = argc;
+      s21_grep_help(argv[1], &structData);
+    }
   }
   return 0;
 }

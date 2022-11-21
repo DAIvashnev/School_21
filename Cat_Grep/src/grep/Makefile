@@ -16,9 +16,13 @@ cpp:
 cl:
 	clang-format -style=google -n *.c *.h
 
+test:
+	cp -r ../test_file_grep/. .
+	chmod +x test_grep.sh
+
 clean:
 	rm -rf *.o
-	rm -rf bash_grep.sh
+	rm -rf test_grep.sh
 	rm -rf empty_file.txt
 	rm -rf f.txt
 	rm -rf ff.txt

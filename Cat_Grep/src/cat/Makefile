@@ -16,10 +16,14 @@ cpp:
 cl:
 	clang-format -style=google -n *.c *.h
 
+test:
+	cp -r ../test_file_cat/. .
+	chmod +x test_cat.sh
+
 clean:
 	rm -rf s21_cat.o
 	rm -rf ascii.txt
-	rm -rf bash_cat.sh
+	rm -rf test_cat.sh
 	rm -rf empty_file.txt
 	rm -rf $(NAME)
 	rm -rf $(TEST)

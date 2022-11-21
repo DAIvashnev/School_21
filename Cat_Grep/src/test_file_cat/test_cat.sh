@@ -54,8 +54,10 @@ done
 echo -e "\nSUCCESS" - $SUCCESS
 echo -e "FAIL"    - $FAIL
 
+echo -e "\n"
 for item in ${array[*]}
 do
     echo -e "\nTest $item option in s21_cat $@ \n"
     valgrind ./s21_cat $item $@ > cat_test/valgrind.txt
+    echo -e "\n"
 done

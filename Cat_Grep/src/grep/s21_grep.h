@@ -26,6 +26,7 @@ typedef struct s_st {
   int empty_file;
   int stopPattern;
   int countArgument;
+  int countSTR;
   int countOutput;
   int check_len;
   char *key;

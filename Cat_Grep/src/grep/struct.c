@@ -17,17 +17,18 @@ void s21_in_Struct(t_st *structData) {
   structData->empty_file = 0;
   structData->stopPattern = 0;
   structData->countArgument = 0;
+  structData->countSTR = 0;
   structData->countOutput = 0;
   structData->check_len = 0;
-  structData->key = calloc(100, sizeof(char));
-  structData->pattern = calloc(100, sizeof(char));
-  structData->o_pattern = calloc(100, sizeof(char));
-  structData->o_search = calloc(100, sizeof(char));
-  structData->o_parsing = calloc(100, sizeof(char));
-  structData->check_argv_f = calloc(100, sizeof(char));
-  structData->file = calloc(100, sizeof(char));
-  structData->check_file = calloc(100, sizeof(char));
-  structData->check_str = calloc(1500, sizeof(char));
+  structData->key = NULL;
+  structData->pattern = NULL;
+  structData->file = NULL;
+  structData->check_argv_f = NULL;
+  structData->o_pattern = NULL;
+  structData->check_file = NULL;
+  structData->o_search = NULL;
+  structData->o_parsing = NULL;
+  structData->check_str = NULL;
 }
 
 void free_data(t_st *structData) {
@@ -35,9 +36,7 @@ void free_data(t_st *structData) {
   free(structData->pattern);
   free(structData->file);
   free(structData->check_file);
-  free(structData->check_str);
   free(structData->o_pattern);
-  free(structData->o_search);
   free(structData->check_argv_f);
   free(structData->o_parsing);
 }
