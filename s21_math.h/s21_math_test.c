@@ -4,8 +4,8 @@
 
 // 12 - long double s21_pow(double base, double exp);
 START_TEST(pow_t1) {
-    double base = 5;
-    double exp = 2;
+    double base = 2;
+    double exp = 6;
     ck_assert_int_eq(s21_pow(base, exp), pow(base, exp));
 } END_TEST
 
