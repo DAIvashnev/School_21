@@ -1,13 +1,14 @@
 #include "s21_math.h"
+#include <math.h>
 
 #define s21_NAN 0.0 / 0.0
 #define s21_INF 1.0 / 0.0
 
 // 1 Вычисляет абсолютное значение целого числа.
 int s21_abs(int x) {
-
+    return x < 0 ? x * -1 : x;
 }
-
+/*
 // 2 Вычисляет арккосинус.
 long double s21_acos(double x) {
 
@@ -32,12 +33,13 @@ long double s21_ceil(double x) {
 long double s21_cos(double x) {
 
 }
-
+*/
 // 7 Возвращает значение e, возведенное в заданную степень.
 long double s21_exp(double x) {
-
+    long double res = 2.718281828459;
+    return s21_pow(res, x);
 }
-
+/*
 // 8 Вычисляет абсолютное значение числа с плавающей точкой.
 long double s21_fabs(double x) {
 
@@ -52,7 +54,7 @@ long double s21_floor(double x) {
 long double s21_fmod(double x, double y) {
 
 }
-
+*/
 // 11 Вычисляет натуральный логарифм.
 long double s21_log(double x) {
 
@@ -71,11 +73,12 @@ long double s21_pow(double base, double exp) {
     return y == 0 ? 1 : x == 0 ? 0 : znak * s21_exp(y * s21_log(x));
 }
 
+/*
 // 13 Вычисляет синус.
 long double s21_sin(double x) {
 
 }
-
+*/
 // 14 Вычисляет квадратный корень.
 long double s21_sqrt(double a) { 
     double t = 0, sqrt = a / 2;
@@ -87,13 +90,13 @@ long double s21_sqrt(double a) {
     }
     return a < 0 ? s21_NAN : sqrt;
 }
-
+/*
 // 15 Вычисляет тангенс.
 long double s21_tan(double x) {
 
 }
-
+*/
 // Факториал числа.
 int s21_facto(int n) {
-    return (n < 2) ? 1 : n * factorial (n - 1);
+    return (n < 2) ? 1 : n * s21_facto(n - 1);
 }

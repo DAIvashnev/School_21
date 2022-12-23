@@ -17,35 +17,29 @@ START_TEST(pow_test) {
 } END_TEST
 
 
-Suite *s21_math_tests_create() {
-  Suite *s21_math = suite_create("s21_math");
-  TCase *s21_math_tests = tcase_create("S21_MATH");
-  tcase_add_test(s21_math_tests, ceil_test);
-  tcase_add_test(s21_math_tests, floor_test);
-  tcase_add_test(s21_math_tests, exp_test);
-  tcase_add_test(s21_math_tests, sin_test);
-  tcase_add_test(s21_math_tests, cos_test);
-  tcase_add_test(s21_math_tests, tan_test);
-  tcase_add_test(s21_math_tests, abs_test);
-  tcase_add_test(s21_math_tests, fabs_test);
-  tcase_add_test(s21_math_tests, fmod_test);
-  tcase_add_test(s21_math_tests, pow_test);
-  tcase_add_test(s21_math_tests, sqrt_test);
-  tcase_add_test(s21_math_tests, log_test);
-  tcase_add_test(s21_math_tests, asin_test);
-  tcase_add_test(s21_math_tests, acos_test);
-  tcase_add_test(s21_math_tests, atan_test);
-  suite_add_tcase(s21_math, s21_math_test);
-  return s21_math;
+Suite *suite_insert(void) {
+    Suite *s = suite_create("suite_insert");
+    TCase *tc = tcase_create("insert_tc");
+
+    // 12
+    tcase_add_test(tc, pow_test);
+
+    suite_add_tcase(s, tc);
+    return s;
 }
 
-int main() {
-  Suite *s21_math = s21_math_tests_create();
-  SRunner *s21_math_runner = srunner_create(s21_math);
-  int number_failed;
-  srunner_run_all(s21_math_runner, CK_VERBOSE);
-  number_failed = srunner_ntests_failed(s21_math_runner);
-  srunner_free(s21_math_runner);
+int main(void) {
+  int fail;
+  Suite *s;
+  SRunner *sr;
+  s = suite_insert();
+  sr = srunner_create(s);
+  fail = srunner_ntests_failed(sr);
 
-  return number_failed == 0 ? 0 : 1;
+  //srunner_run_all(sr, CK_VERBOSE);
+  srunner_run_all(sr, CK_NORMAL);
+
+  srunner_set_fork_status(sr, CK_NOFORK);
+  srunner_free(sr);
+  return fail == 0 ? 0 : 1;
 }

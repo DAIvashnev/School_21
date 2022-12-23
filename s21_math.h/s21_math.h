@@ -49,6 +49,6 @@ long double s21_sqrt(double x);
 long double s21_tan(double x);
 
 // Факториал числа.
-int s21_facto(int x);
+int s21_facto(int n);
 
 #endif // SRC_S21_MATH_H_
