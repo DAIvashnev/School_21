@@ -1,7 +1,6 @@
 #ifndef SRC_S21_MATH_H_
 #define SRC_S21_MATH_H_
 
-#include <check.h>
 #include <stdio.h>
 
 // 1 Вычисляет абсолютное значение целого числа.
@@ -48,5 +47,8 @@ long double s21_sqrt(double x);
 
 // 15 Вычисляет тангенс.
 long double s21_tan(double x);
+
+// Факториал числа.
+int s21_facto(int x);
 
 #endif // SRC_S21_MATH_H_

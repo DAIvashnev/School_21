@@ -1,38 +1,51 @@
 #include "s21_math.h"
+#include <check.h>
 
 #define BUFF_SIZE 1024
 
 // 12 - long double s21_pow(double base, double exp);
-START_TEST(pow_t1) {
-    double base = 2;
-    double exp = 6;
-    ck_assert_int_eq(s21_pow(base, exp), pow(base, exp));
+START_TEST(pow_test) {
+  ck_assert_int_eq(pow(13, 2), s21_pow(13, 2));
+  ck_assert_int_eq(pow(-13, 2.5), s21_pow(-13, 2.5));
+  ck_assert_int_eq(pow(13, 2.5), s21_pow(13, 2.5));
+  ck_assert_int_eq(pow(-13.21313, 2.5), s21_pow(-13.21313, 2.5));
+  ck_assert_float_eq(pow(13.21313, 2.5), s21_pow(13.21313, 2.5));
+  ck_assert_int_eq(pow(-1000.21313, 2.5), s21_pow(-1000.21313, 2.5));
+  ck_assert_float_eq(pow(0, 2.5), s21_pow(0, 2.5));
+  ck_assert_float_eq(pow(123, -2), s21_pow(123, -2));
+  ck_assert_float_eq(pow(123, 0), s21_pow(123, 0));
 } END_TEST
 
 
-Suite *suite_insert(void) {
-    Suite *s = suite_create("suite_insert");
-    TCase *tc = tcase_create("insert_tc");
-
-    // 12
-    tcase_add_test(tc, pow_t1);
-
-    suite_add_tcase(s, tc);
-    return s;
+Suite *s21_math_tests_create() {
+  Suite *s21_math = suite_create("s21_math");
+  TCase *s21_math_tests = tcase_create("S21_MATH");
+  tcase_add_test(s21_math_tests, ceil_test);
+  tcase_add_test(s21_math_tests, floor_test);
+  tcase_add_test(s21_math_tests, exp_test);
+  tcase_add_test(s21_math_tests, sin_test);
+  tcase_add_test(s21_math_tests, cos_test);
+  tcase_add_test(s21_math_tests, tan_test);
+  tcase_add_test(s21_math_tests, abs_test);
+  tcase_add_test(s21_math_tests, fabs_test);
+  tcase_add_test(s21_math_tests, fmod_test);
+  tcase_add_test(s21_math_tests, pow_test);
+  tcase_add_test(s21_math_tests, sqrt_test);
+  tcase_add_test(s21_math_tests, log_test);
+  tcase_add_test(s21_math_tests, asin_test);
+  tcase_add_test(s21_math_tests, acos_test);
+  tcase_add_test(s21_math_tests, atan_test);
+  suite_add_tcase(s21_math, s21_math_test);
+  return s21_math;
 }
 
-int main(void) {
-  int fail;
-  Suite *s;
-  SRunner *sr;
-  s = suite_insert();
-  sr = srunner_create(s);
-  fail = srunner_ntests_failed(sr);
+int main() {
+  Suite *s21_math = s21_math_tests_create();
+  SRunner *s21_math_runner = srunner_create(s21_math);
+  int number_failed;
+  srunner_run_all(s21_math_runner, CK_VERBOSE);
+  number_failed = srunner_ntests_failed(s21_math_runner);
+  srunner_free(s21_math_runner);
 
-  srunner_run_all(sr, CK_VERBOSE);
-  srunner_run_all(sr, CK_NORMAL);
-
-  srunner_set_fork_status(sr, CK_NOFORK);
-  srunner_free(sr);
-  return fail == 0 ? 0 : 1;
+  return number_failed == 0 ? 0 : 1;
 }

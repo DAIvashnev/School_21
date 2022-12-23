@@ -19,3 +19,9 @@ test: clean
 	$(CC) $(FLAGS) -c s21_math.c
 	$(CC) $(FLAGS) s21_math.o s21_math_test.o -lcheck -lm -lpthread -lrt -lsubunit -o ./s21_math
 	./s21_math
+
+tr:
+	$(CC) $(FLAGS) tr.c -lcheck -lm -lpthread -lrt -lsubunit -o tr
+
+ar:
+	$(CC) $(FLAGS) ar.c -lcheck -lm -lpthread -lrt -lsubunit -o ar
