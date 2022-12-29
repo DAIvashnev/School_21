@@ -3,6 +3,12 @@
 
 #include <stdio.h>
 
+#define s21_PI 3.141592653589793238462643
+#define s21_E 1e-17
+#define s21_NAN 0.0 / 0.0
+#define s21_INF 1.0 / 0.0
+#define s21_MAX_double 1.7976931348623157e308
+
 // 1 Вычисляет абсолютное значение целого числа.
 int s21_abs(int x);
 
@@ -48,7 +54,9 @@ long double s21_sqrt(double x);
 // 15 Вычисляет тангенс.
 long double s21_tan(double x);
 
-// Факториал числа.
-int s21_facto(int n);
+
+int s21_factorial(int n);
+void round_to_pi(double *a);
+long double p_log(double a);
 
 #endif // SRC_S21_MATH_H_
