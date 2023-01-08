@@ -1,23 +1,49 @@
-FLAGS = -Wall -Werror -Wextra
-#TARGET = ./s21_string
-CC = gcc
+CC=gcc -std=c11 -D_GNU_SOURCE
+CFLAGS=-c -Wall -Wextra -Werror
+TEST_FLAGS=-lcheck -lm -lpthread
+GCOV_FLAGS=--coverage -Wall -Wextra -Werror
 
-all: test
+SOURCES=$(wildcard s21_*.c)
+OBJECTS=$(SOURCES:.c=.o)
+EXECUTABLE=s21_string
 
-style:
+TESTS_SOURCES=test.c $(wildcard tests/*.c)
+TESTS_OBJECTS=$(TESTS_SOURCES:.c=.o)
 
-	clang-format -style=google -n *.c *.h
-	cppcheck --enable=all --suppress=missingIncludeSystem *.c *.h
+ifeq ($(shell uname -s),Linux)
+	TEST_FLAGS += -lrt -lsubunit
+endif
+
+all: s21_string.a
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $^ -o $@
+
+.c.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+rebuild: clean all
 
 clean:
-	rm -rf ./*.o ./s21_string
+	rm -rf *.o tests/*.o $(EXECUTABLE) test
+	rm -rf *.gcno *.gcov *.gcda *.info report s21_string.a
 
-s21_string.a:
-	$(CC) -c $(FLAGS) s21_string.c
-	ar -rcs s21_string.a *.o
+style:
+	clang-format -style=google -n *.c *.h
 
-test: clean
-	$(CC) $(FLAGS) -c s21_string_test.c
-	$(CC) $(FLAGS) -c s21_string.c
-	$(CC) $(FLAGS) s21_string.o s21_string_test.o -lcheck -lm -lpthread -lrt -lsubunit -o ./s21_string
-	./s21_string
+# компил функций
+s21_string.a: $(OBJECTS)
+	ar -rcs s21_string.a $(OBJECTS)
+	ranlib s21_string.a
+
+# тесты
+test: $(TESTS_OBJECTS) s21_string.a
+	$(CC) $^ -o test $(TEST_FLAGS)
+	./test
+
+gcov_report: $(TESTS_OBJECTS)
+	$(CC) $(GCOV_FLAGS) $(TESTS_OBJECTS) $(SOURCES) $(TEST_FLAGS) -o test
+	./test
+	gcov *.gcno
+	lcov -t "test" -o test.info -c -d . --rc lcov_branch_coverage=1
+	genhtml -o report test.info --rc lcov_branch_coverage=1

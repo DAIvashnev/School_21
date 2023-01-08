@@ -1,15 +1,32 @@
-// #ifdef SRC_S21_STRING_H_
-// #define SRC_S21_STRING_H_
+#ifndef SRC_S21_STRING_H_
+#define SRC_S21_STRING_H_
 
-#include <check.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <math.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <math.h>
-// #include "s21_sprintf.h"  // для 14 функции
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+  bool minus;
+  bool plus;
+  bool blank;
+  bool sharp;
+  bool zero;
+
+  int width;
+  int precision;
+  bool is_precision;
+  bool is_negative;
+  char length;
+  char specifier;
+
+  bool width_asterisk;
+  void *buffer;
+  int space_char;
+  int no_success;
+} Kit;
 
 typedef long unsigned s21_size_t;
 #define s21_NULL (void *)0
@@ -89,8 +106,8 @@ char *s21_strstr(const char *haystack, const char *needle);
 // 20 Разбивает строку str на ряд токенов, разделенных delim.
 char *s21_strtok(char *str, const char *delim);
 
-// int s21_sprintf(char *str, const char *format);
-// int s21_sscanf(const char *str, const char *format);
+int s21_sprintf(char *str, const char *format, ...);
+int s21_sscanf(const char *str, const char *format, ...);
 
 // =================  C# ===================
 void *s21_to_upper(const char *str);
@@ -98,4 +115,4 @@ void *s21_to_lower(const char *str);
 void *s21_insert(const char *src, const char *str, size_t start_index);
 void *s21_trim(const char *src, const char *trim_chars);
 
-// #endif  // SRC_S21_STRING_H_
+#endif  // SRC_S21_STRING_H_

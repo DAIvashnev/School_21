@@ -1,10 +1,8 @@
 #include "s21_string.h"
 
-// изменить 14 на s21_
-
 #if defined(__linux__)
 #define MAX_ERROR 133
-char error_message[100] = "Unknown error ";
+char error_message[100] = "Unknown error \0";
 char *errors[] = {"Success\0",
                   "Operation not permitted\0",
                   "No such file or directory\0",
@@ -142,7 +140,7 @@ char *errors[] = {"Success\0",
 
 #elif defined(__APPLE__)
 #define MAX_ERROR 106
-char error_message[100] = "Unknown error: ";
+char error_message[100] = "Unknown error: \0";
 char *errors[] = {"Undefined error: 0\0",
                   "Operation not permitted\0",
                   "No such file or directory\0",
@@ -426,7 +424,7 @@ char *s21_strerror(int errnum) {
   int unknow = 1;
   static char message[128];
   if (errnum < 0 || errnum > MAX_ERROR) {
-    sprintf(message, "%s%d", error_message, errnum);
+    s21_sprintf(message, "%s%d", error_message, errnum);
     unknow = 0;
   }
   return (unknow) ? errors[errnum] : message;
@@ -476,22 +474,17 @@ char *s21_strrchr(const char *str, int c) {
 // 18 Вычисляет длину начального сегмента str1, который полностью состоит из
 // символов str2.
 s21_size_t s21_strspn(const char *str1, const char *str2) {
-  s21_size_t result = 0;
-  int f = 0;
-  for (int i = 0; str1[i] != '\0'; i++) {
-    for (int j = 0; str2[j] != '\0'; j++) {
-      if (str1[i] == str2[j]) {
-        f = 1;
-        break;
-      }
+  s21_size_t i;
+  s21_size_t j;
+
+  for (i = 0; str1[i]; i++) {
+    for (j = 0; str2[j]; j++) {
+      if (str2[j] == str1[i]) break;
     }
-    if (!f) {
-      result = i++;
-      break;
-    }
-    f = 0;
+    if (!str2[j]) break;
   }
-  return result;
+
+  return i;
 }
 
 // 19 Находит первое вхождение всей строки needle (не включая завершающий
@@ -501,14 +494,19 @@ char *s21_strstr(const char *haystack, const char *needle) {
   if (*needle == '\0') {
     result = (char *)haystack;
   } else {
-    for (int i = 0; haystack[i] != '\0'; i++) {
-      for (int j = i, k = 0; needle[k] != '\0' && haystack[j] == needle[k];
-           j++, k++) {
-        if (k > 0 && needle[k + 1] == '\0') {
-          result = (char *)haystack + i;
-          break;
-        }
+    int i = 0, j = 0, k = 0;
+    while (haystack[i]) {
+      j = i;
+      k = 0;
+      while (needle[k] && (haystack[j] == needle[k])) {
+        j++;
+        k++;
       }
+      if (needle[k] == '\0') {
+        result = (char *)haystack + i;
+        break;
+      }
+      i++;
     }
   }
 
@@ -517,40 +515,43 @@ char *s21_strstr(const char *haystack, const char *needle) {
 
 // 20
 char *s21_strtok(char *str, const char *delim) {
-    static char* buffer;
-    static int size;
-    register int _match;
-    char *token = NULL;
-    int iter = 0;
+  static char *buffer;
+  static int size;
+  register int _match;
+  char *token = s21_NULL;
+  int iter = 0;
 
-    if (str) {
-        size = strlen(str);
-        buffer = str;
-        buffer[size] = 0;
-        _match = 0;
-    }
-    if (buffer && *buffer) {
-        while (iter != 1) {
-            iter++;
-            // Цикл нужен для проверки: если первый элемент token'а равен концу строки, то нужно искать заново
-            _match = strcspn(buffer, delim);
-            size = size - _match;
-            token = buffer;
-            buffer = buffer + _match;
-            if (*buffer == 0) {
-                buffer = NULL;
-            } else {
-                token[_match] = 0;
-                buffer++;
-                if (token && *buffer) {
-                  if (token[0] == 0) iter = 0;
-                }
-            }
+  if (str) {
+    size = s21_strlen(str);
+    buffer = str;
+    buffer[size] = 0;
+    _match = 0;
+  }
+  if (buffer && *buffer) {
+    while (iter != 1) {
+      iter++;
+      // Цикл нужен для проверки: если первый элемент token'а равен концу
+      // строки, то нужно искать заново
+      _match = s21_strcspn(buffer, delim);
+      size = size - _match;
+      token = buffer;
+      buffer = buffer + _match;
+      if (*buffer == 0) {
+        buffer = s21_NULL;
+      } else {
+        token[_match] = '\0';
+        buffer++;
+        if (token && *buffer) {
+          if (token[0] == '\0') iter = 0;
         }
+      }
     }
-    return token;
+  }
+  if (token && (token[0] == 0)) {
+    token = s21_NULL;
+  }
+  return token;
 }
-
 
 // =================  C# ===================
 // 1
@@ -591,101 +592,100 @@ void *s21_to_lower(const char *str) {
 
 // 3
 void *s21_insert(const char *src, const char *str, size_t start_index) {
-    char *sp = "";
-    char *result = s21_NULL;
-    size_t count_src = 0;
-    size_t count_str = 0;
-    if(src != s21_NULL) {
-        count_src = (size_t)s21_strlen(src);
+  char *sp = "";
+  char *result = s21_NULL;
+  size_t count_src = 0;
+  size_t count_str = 0;
+  if (src != s21_NULL) {
+    count_src = (size_t)s21_strlen(src);
+  }
+  if (str != s21_NULL) {
+    count_str = (size_t)s21_strlen(str);
+  }
+  size_t sum_long = count_src + count_str;
+  if ((int)start_index == 0 && (src == s21_NULL || s21_strcmp(src, sp) == 0)) {
+    if ((result = calloc(s21_strlen(str) + 1, sizeof(char)))) {
+      s21_strcat(result, str);
+      result[s21_strlen(result)] = '\0';
     }
-    if(str != s21_NULL) {
-        count_str = (size_t)s21_strlen(str);
-    }
-    size_t sum_long = count_src + count_str;
-    if((int)start_index == 0 && (src == s21_NULL || s21_strcmp(src, sp) == 0)) {
-        if((result = calloc(s21_strlen(str) + 1, sizeof(char)))) {
-          s21_strcat(result, str);
-          result[s21_strlen(result)] = '\0';
+  } else if (start_index <= count_src) {
+    if ((result = calloc((sum_long + 1), sizeof(char)))) {
+      size_t index = 0;
+      for (size_t i = 0; i <= count_src; i++) {
+        if (i == start_index) {
+          for (size_t j = 0; j < count_str; j++) {
+            result[index] = str[j];
+            index++;
+          }
         }
+        result[index] = src[i];
+        index++;
+      }
+      result[index] = '\0';
     }
-    else if(start_index <= count_src) {
-        if((result = calloc((sum_long + 1), sizeof(char)))) {
-                size_t index = 0;
-                for (size_t i = 0; i < count_src; i++) {
-                    if (i == start_index) {
-                        for (size_t j = 0; j < count_str; j++) {
-                            result[index] = str[j];
-                            index++;
-                        }
-                    }
-                    result[index] = src[i];
-                    index++;
-                }
-            result[index] = '\0';
-        }
-    }
+  }
   return result;
 }
 
 // 4
 void *s21_trim(const char *src, const char *trim_chars) {
-    char *result = s21_NULL;
-    char *s = "";
-    int j = 0, flag = 0, sp = 0;
-    int in = 0, out = 0, lg = 0, ch = 0;
-    if(trim_chars == s21_NULL || (s21_strcmp(trim_chars,s) == 0)) {
-        trim_chars = " ";
+  char *result = s21_NULL;
+  char *s = "";
+  int j = 0, flag = 0, sp = 0;
+  int in = 0, out = 0, lg = 0, ch = 0;
+  if (trim_chars == s21_NULL || (s21_strcmp(trim_chars, s) == 0)) {
+    trim_chars = " ";
+  }
+  for (int i = 0; src[i] != '\0'; i++) {
+    while (trim_chars[j] != '\0') {
+      if (trim_chars[j] == src[i]) {
+        in++;
+        flag = 1;
+        if (sp == 0) {
+          break;
+        }
+      }
+      j++;
     }
-    for(int i = 0; src[i] != '\0'; i++) {
-        while(trim_chars[j] != '\0') {
-            if(trim_chars[j] == src[i]) {
-                in++;
-                flag = 1;
-                if(sp == 0) {
-                    break;
-                }
-            }
-            j++;
-        }
-        if(flag == 0) {
-            break;
-        } else {
-            j = 0;
-            flag = 0;
-        }
+    if (flag == 0) {
+      break;
+    } else {
+      j = 0;
+      flag = 0;
     }
-    j = 0;
-    for(int i = s21_strlen(src)-1; i != 0; i--) {
-        while(trim_chars[j] != '\0') {
-            if(trim_chars[j] == src[i]) {
-                out++;
-                flag = 1;
-                if(sp == 0) {
-                    break;
-                }
-            }
-            j++;
+  }
+  j = 0;
+  for (int i = s21_strlen(src) - 1; i != 0; i--) {
+    while (trim_chars[j] != '\0') {
+      if (trim_chars[j] == src[i]) {
+        out++;
+        flag = 1;
+        if (sp == 0) {
+          break;
         }
-        if(flag == 0) {
-            break;
-        } else {
-            j = 0;
-            flag = 0;
-        }
+      }
+      j++;
     }
-    j = 0;
-    lg = s21_strlen(src) - out;
-    ch = s21_strlen(src);
-  if((result = calloc((s21_strlen(src) + 1), sizeof(char)))) {
-        if(in == ch) {
-            result[0] = '\0';
-        } else {
-            for(int i = in; i != lg; i++) {
-                result[j] = src[i];
-                j++;
-            }
-            result[s21_strlen(result)] = '\0';
-        }
+    if (flag == 0) {
+      break;
+    } else {
+      j = 0;
+      flag = 0;
     }
+  }
+  j = 0;
+  lg = s21_strlen(src) - out;
+  ch = s21_strlen(src);
+  if ((result = calloc((s21_strlen(src) + 1), sizeof(char)))) {
+    if (in == ch) {
+      result[0] = '\0';
+    } else {
+      for (int i = in; i != lg; i++) {
+        result[j] = src[i];
+        j++;
+      }
+      result[s21_strlen(result)] = '\0';
+    }
+  }
   return result;
 }
