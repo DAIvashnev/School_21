@@ -1,223 +1,366 @@
 #include "s21_math.h"
 
-// 1 Вычисляет абсолютное значение целого числа.
-int s21_abs(int x) { return x < 0 ? x * -1 : x; }
+// ======================= ADDITIONAL FUNCTIONS ========================
+long double s21_factorial(long double x) {
+  long double res = 1.0;
 
-// 2 Вычисляет арккосинус, по отношению к артангенсу.
+  if (x < 0) {
+    res = 0;
+  } else if (x == 0) {
+    res = 1.0;
+  } else {
+    for (int i = 1; i <= x; i++) {
+      res = res * i;
+    }
+  }
+  return res;
+}
+
+int is_NAN(double x) {
+  int res = !(x == x);
+  return res;
+}
+
+long double int_degree_of_x(double x, double n) {
+  // возведение x в целую степень
+  // хорошо бы сделать проверку n на целое число через остаток от деления = 0
+  long double pow = x;
+  if (n == 0) {
+    pow = 1;
+  } else {
+    while (n > 1) {
+      pow = pow * x;
+      n--;
+    }
+  }
+  return pow;
+}
+
+// =========================  MAIN FUNCTIONS ===========================
+int s21_abs(int x) { return x > 0 ? x : (-x); }
+
 long double s21_acos(double x) {
   long double res = 0;
-  if (x < 1 && x > -1) {
-    res = s21_PI / 2 - s21_asin(x);
+  if (x == 0) {
+    res = S21_PI / 2;
   } else if (x == 1) {
     res = 0;
   } else if (x == -1) {
-    res = s21_PI;
+    res = S21_PI;
+  } else if (x < 1 && x > -1) {
+    res = S21_PI / 2 - s21_asin(x);
   } else {
-    res = s21_NAN;
+    res = S21_NAN;
   }
   return res;
 }
 
-// 3 Вычисляет арксинус. Ряд Маклорена.
 long double s21_asin(double x) {
-  int metka = 0;
+  int sign = 0;
   if (x < 0 && x != -1) {
     x = x * -1;
-    metka = 1;
+    sign = 1;
   }
-  long double n = 1, a = x, s = 1, res = x;
-  if (x < 1 && x > -1) {
-    while (s > s21_E) {
-      a = x * x * (a * (2 * n - 1)) / (2 * n);
-      s = a / (2 * n + 1);
-      res = res + s;
-      n++;
+  long double res = x;
+  long double res_prom = 1;
+  long double prom = x;
+  long double i = 1;
+
+  if (x == 0) {
+    res = 0;
+  } else if (x == 1) {
+    res = S21_PI / 2;
+  } else if (x == -1) {
+    res = -S21_PI / 2;
+  } else if (x < 1 && x > -1) {
+    while (res_prom > 1.0e-17) {
+      prom = x * x * (prom * (2 * i - 1)) / (2 * i);
+      res_prom = prom / (2 * i + 1);
+      res = res + res_prom;
+      i++;
     }
-    if (metka == 1) {
+    if (sign == 1) {
       res = res * -1;
     }
-  } else if (x == 1) {
-    res = s21_PI / 2;
-  } else if (x == -1) {
-    res = -s21_PI / 2;
+  } else {
+    res = S21_NAN;
+  }
+  return res;
+}
+
+long double s21_atan(double x) {
+  long double res = 0;
+  if (x == S21_INFINITY) {
+    res = S21_PI / 2;
+  } else if (x == -S21_INFINITY) {
+    res = -S21_PI / 2;
+  } else if (is_NAN(x)) {
+    res = S21_NAN;
+  } else {
+    res = s21_asin(x / s21_sqrt(1 + (x * x)));
+  }
+  return res;
+}
+
+long double s21_ceil(double x) {
+  long double res = 0;
+
+  if (is_NAN(x)) {
+    res = S21_NAN;
+  } else if (x == S21_INFINITY) {
+    res = S21_INFINITY;
+  } else if (x == -S21_INFINITY) {
+    res = -S21_INFINITY;
+  } else {
+    // к целочисленному типу, чтоб избавиться от дроби
+    if (x < 0) {
+      res = (long long)x;
+    } else {
+      if (x == (long long)x) {
+        res = (long long)x;
+      } else {
+        res = (long long)(x + 1);
+      }
+    }
+  }
+  return res;
+}
+
+long double s21_cos(double x) {
+  long double res = 0;
+
+  if (x == S21_INFINITY || x == -S21_INFINITY || is_NAN(x)) {
+    res = S21_NAN;
+  } else {
+    // подведем под интервал -2пи до 2пи
+    x = s21_fmod(x, 2 * S21_PI);
+    // вычислим по ряду Тейора
+    long double res_prom = 1;
+    int i = 0;
+    while (s21_fabs(res_prom) > 1.0e-17) {
+      res_prom =
+          ((s21_pow(-1, i) * s21_pow(x, 2 * i)) / (s21_factorial(2 * i)));
+      res = res + res_prom;
+      i++;
+    }
+  }
+  return res;
+}
+
+long double s21_exp(double x) {
+  double n = 0;
+  long double a = 0;
+  long double b = 0;
+  long double iter = 1;
+  long double exp = 0;
+  int neg_fl = 0;
+
+  // проверка начального x
+  if (x == S21_INFINITY) {
+    exp = S21_INFINITY;
+  } else if (x == -S21_INFINITY) {
+    exp = 0;
+  } else if (is_NAN(x)) {
+    exp = S21_NAN;
+  } else {
+    if (x < 0) {
+      neg_fl = 1;
+      x = -x;
+    }
+    while (iter > 1.0e-17) {
+      a = int_degree_of_x(x, n);
+      b = s21_factorial(n);
+      iter = a / b;
+      n++;
+      exp = exp + iter;
+      if (a == S21_INFINITY || b == S21_INFINITY || exp == S21_INFINITY) {
+        exp = S21_INFINITY;
+        break;
+      }
+    }
+    if (neg_fl == 1) exp = 1 / exp;
+  }
+  return exp;
+}
+
+long double s21_fabs(double x) { return x >= 0 ? x : (-x); }
+
+long double s21_floor(double x) {
+  long double res = 0;
+  if (is_NAN(x)) {
+    res = S21_NAN;
+  } else if (x == S21_INFINITY) {
+    res = S21_INFINITY;
+  } else if (x == -S21_INFINITY) {
+    res = -S21_INFINITY;
+  } else {
+    if (x < 0) {
+      if (x == (long long)x) {
+        res = (long long)x;
+      } else {
+        x = x - 1;
+        res = (long long)x;
+      }
+    } else {
+      res = (long long)x;
+    }
+  }
+  return res;
+}
+
+long double s21_fmod(double x, double y) {
+  long double res;
+
+  if (x == S21_INFINITY || x == -S21_INFINITY || is_NAN(x)) {
+    res = S21_NAN;
+  } else if (x == 0 && y == 0) {
+    res = S21_NAN;
+  } else if (x == 0 && (y == -S21_INFINITY || y == S21_INFINITY)) {
+    res = 0;
+  } else if (y == S21_INFINITY || y == -S21_INFINITY) {
+    res = x;
+  } else if (y == 0) {
+    res = S21_NAN;
+  } else {
+    // x-n*y, где n – это результат деления x на y округленный в сторону нуля
+    long long n = (long long)(x / y);
+    res = (x - (n * y));
+  }
+  return res;
+}
+
+long double s21_log(double x) {
+  long double res = 0.0;
+  long double iter = 1;
+  long double log = 0;
+  double EPS = 1.0e-10;
+
+  if (x == 0) {
+    res = -S21_INFINITY;
+  } else if (x < 0 || x == S21_NAN || x == -S21_INFINITY) {
+    res = S21_NAN;
+  } else if (x == S21_INFINITY) {
+    res = S21_INFINITY;
+  } else {
+    int e_pow = 0;  // приводим x к диапазону (0; e], e_pow степень, которую
+                    // потом прибавим к результату
+    while (x >= S21_E) {
+      x /= S21_E;
+      e_pow++;
+    }
+
+    while (s21_fabs(iter - log) > EPS) {
+      iter = log;
+      log = iter + 2 * ((x - s21_exp(iter)) / (x + s21_exp(iter)));
+    }
+    res = log + e_pow;
+  }
+  return res;
+}
+
+long double s21_pow(double x, double y) {
+  long double res = 0;
+  if (x == 1) {
+    res = 1;
+  } else if (y == 0) {
+    res = 1;
+  } else if (x == 0 && y < 0) {
+    res = S21_INFINITY;
   } else if (x == 0) {
     res = 0;
+  } else if (x == S21_INFINITY && y == S21_INFINITY) {
+    res = S21_INFINITY;
+  } else if (x == S21_INFINITY && y == -S21_INFINITY) {
+    res = 0;
+  } else if (x == -S21_INFINITY && y == 1) {
+    res = -S21_INFINITY;
+  } else if (x == -S21_INFINITY && y > 0) {
+    res = S21_INFINITY;
+  } else if (x == -S21_INFINITY && y < 0) {
+    res = 0;
+  } else if (y == 0) {
+    res = 1;
+  } else if (is_NAN(x)) {
+    res = S21_NAN;
+  } else if (y == -S21_INFINITY && s21_abs(x) > 1) {
+    res = 0;
+  } else if (y == -S21_INFINITY && s21_abs(x) < 1) {
+    res = S21_INFINITY;
+  } else if (y == S21_INFINITY && s21_abs(x) > 1) {
+    res = S21_INFINITY;
+  } else if (y == S21_INFINITY && s21_abs(x) < 1) {
+    res = 0;
   } else {
-    res = s21_NAN;
-  }
-  return res;
-}
+    int neg_fl = 0;
 
-// 4 Вычисляет арктангенс, по отношению к арксинусу.
-long double s21_atan(double x) { return s21_asin(x / s21_sqrt(1 + (x * x))); }
-
-// 5 Возвращает ближайшее целое число, не меньшее заданного значения.
-long double s21_ceil(double x) {
-  long double a = x;
-  return a - (long long int)x > 0 ? a - (a - (long long int)x) + 1
-                                  : a - (a - (long long int)x);
-}
-
-// 6 Вычисляет косинус.
-long double s21_cos(double x) {
-  if (s21_fabs(x) <= 0.000001) x = 0.0;
-  round_to_pi(&x);
-  long double res = 1.0, n = 1.0, an = 1.0;
-  while (!(an >= -s21_E && an <= s21_E)) {
-    an *= (-1.0) * x * x / ((2.0 * n - 1.0) * (2.0 * n));
-    res += an;
-    n++;
-  }
-  return res;
-}
-
-// 7 Возвращает значение e, возведенное в заданную степень.
-long double s21_exp(double x) {
-  long double res, t;
-  long double a = x;
-  int znak = 0;
-  if (a < 0) {
-    a = -a;
-    znak = -1;
-  }
-  int n = 1;
-  for (res = 1.0, t = 1.0; s21_fabs(t) > s21_E; n++) {
-    t *= a / n;
-    res += t;
-    if (res > s21_MAX_double) {
-      res = s21_INF;
-      break;
+    if (y < 0) {
+      neg_fl = 1;
+      y = -y;
     }
-  }
-  return res != s21_INF ? znak == -1 ? 1 / res : res : s21_INF;
-}
-
-// 8 Вычисляет абсолютное значение числа с плавающей точкой.
-long double s21_fabs(double x) { return x < 0.0 ? x * -1.0 : x; }
-
-// 9 Возвращает ближайшее целое число, не превышающее заданное значение.
-long double s21_floor(double x) {
-  long double a = x;
-  return a - (int)a > 0 ? a - (a - (int)a) : a - (int)a < 0 ? (int)a - 1 : a;
-}
-
-// 10 Остаток операции деления с плавающей точкой.
-long double s21_fmod(double x, double y) {
-  int metka_a = 0, metka_b = 0;
-  if (x < 0) {
-    metka_a = 1;
-  }
-  if (y < 0) {
-    metka_b = 1;
-  }
-  if (metka_b == 1) {
-    y = y * (-1);
-  }
-  if (metka_a == 1) {
-    x = x * (-1);
-  }
-  double n = s21_floor(x / y);
-  double result = x - n * y;
-  if (metka_a == 1) {
-    result = result * (-1);
-  }
-  return result;
-}
-
-// 11 Вычисляет натуральный логарифм.
-long double s21_log(double x) {
-  long double result;
-  if (x == 1)
-    result = 0;
-  else if (x == 0)
-    result = -s21_INF;
-  else if (x < 0) {
-    result = s21_NAN;
-  } else {
-    if (x > 0 && x < 1) {
-      result = p_log(x);
+    if (s21_fmod(y, 1) == 0) {
+      res = int_degree_of_x(x, y);
     } else {
-      long double res = 0.0, term = (x - 1) / x;
-      long long denominator = 2;
-      long double temp = term;
-      unsigned int count = 0;
-      while (temp > s21_E) {
-        res += temp;
-        term *= (x - 1) / x;
-
-        temp = term * (1.0 / denominator);
-        denominator += 1;
-        count++;
-      }
-      result = res;
+      double y_int = s21_floor(y);
+      double y_d = y - y_int;
+      res = s21_exp(y_d * s21_log(x)) * int_degree_of_x(x, y_int);
     }
-  }
-  return result;
-}
-
-// 12 Возводит число в заданную степень.
-long double s21_pow(double base, double exp) {
-  long double znak = 1.0;
-  long double x = base;
-  long double y = exp;
-  if (x < 0 && y == (int)y) {
-    x = -x;
-    znak = -1.0;
-    if ((int)y % 2 == 0) znak *= -1.0;
-  }
-  return y == 0 ? 1 : x == 0 ? 0 : znak * s21_exp(y * s21_log(x));
-}
-
-// 13 Вычисляет синус. Ряд Тейлора + ряд Маклорена.
-long double s21_sin(double x) {
-  if (s21_fabs(x) <= 0.000001) x = 0.0;
-  round_to_pi(&x);
-  long double res = 0.0, n = 0.0, an = 1.0;
-  while (!(an >= -s21_E && an <= s21_E)) {
-    an = s21_pow(-1, n) * s21_pow(x, 2 * n + 1) / s21_factorial(2 * n + 1);
-    res += an;
-    n++;
+    if (neg_fl == 1) res = 1. / res;
   }
   return res;
 }
 
-// 14 Вычисляет квадратный корень, методом Ньютона.
-long double s21_sqrt(double x) {
-  double t = 0, sqrt = x / 2;
-  if (x > 0) {
-    while ((t - sqrt) != 0) {
-      t = sqrt;
-      sqrt = (t + (x / t)) / 2;
+long double s21_sin(double x) {
+  // при x > 999999999 пропадает точность
+  long double res = 0;
+
+  if (x == S21_INFINITY || x == -S21_INFINITY || is_NAN(x)) {
+    res = S21_NAN;
+  } else {
+    // подведем под интервал -2пи до 2пи
+    x = s21_fmod(x, 2 * S21_PI);
+
+    long double res_prom = 1;
+    int i = 0;
+    while (s21_fabs(res_prom) > 1.0e-16) {
+      res_prom = ((s21_pow(-1, i) * s21_pow(x, 1 + (2.0 * i))) /
+                  (s21_factorial(1 + (2.0 * i))));
+      res = res + res_prom;
+      i++;
     }
   }
-  return x < 0 ? s21_NAN : sqrt;
+  return res;
 }
 
-// 15 Вычисляет тангенс. По формуле.
-long double s21_tan(double x) { return s21_sin(x) / s21_cos(x); }
+long double s21_sqrt(double x) {
+  long double approx = x / 2;
 
-// Факториал числа.
-long double s21_factorial(double x) {
-  return (x < 2) ? 1 : x * s21_factorial(x - 1);
-}
-
-long double p_log(double x) {
-  x--;
-  long double r = x, t = x;
-  long double i = 2;
-  while (s21_fabs(r) > s21_E) {
-    r *= -x * (i - 1) / i;
-    i += 1;
-    t += r;
+  if (x == S21_INFINITY) {
+    approx = S21_INFINITY;
+  } else if (x == 0) {
+    approx = 0;
+  } else if (x > 0) {
+    while (s21_fabs(approx - x / approx) > 1.0e-10) {
+      approx = (approx + x / approx) * 0.5;
+    }
+  } else {
+    approx = S21_NAN;
   }
-  return t;
+  return approx;
 }
 
-void round_to_pi(double *x) {
-  while (s21_fabs(*x) > (2.0 * s21_PI)) {
-    if (*x < 0)
-      *x = *x + (2.0 * s21_PI);
-    else
-      *x = *x - (2.0 * s21_PI);
+long double s21_tan(double x) {
+  long double res = 0;
+  if (x == S21_INFINITY || x == -S21_INFINITY || is_NAN(x)) {
+    res = S21_NAN;
+  } else {
+    if (x == S21_PI / 2) {
+      res = S21_INFINITY;
+    } else if (x == -(S21_PI / 2)) {
+      res = -S21_INFINITY;
+    } else {
+      res = s21_sin(x) / s21_cos(x);
+    }
   }
+
+  return res;
 }

@@ -47,3 +47,4 @@ gcov_report: $(TESTS_OBJECTS)
 	gcov *.gcno
 	lcov -t "test" -o test.info -c -d . --rc lcov_branch_coverage=1
 	genhtml -o report test.info --rc lcov_branch_coverage=1
+	open report/index.html

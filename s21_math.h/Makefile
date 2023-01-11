@@ -1,49 +1,52 @@
-CC = gcc
-CFLAGS = -Wall -Werror -Wextra
-TEST_LIBS = -lcheck -lm -lpthread
-OBJECTS=s21_math.o
-SOURSES=s21_math.c
-GCOVFLAGS = -fprofile-arcs -ftest-coverage
-OS = $(shell uname)
+CC=gcc -std=c11 -D_GNU_SOURCE
+CFLAGS=-c -Wall -Wextra -Werror
+TEST_FLAGS=-lcheck -lm -lpthread
+GCOV_FLAGS=--coverage -Wall -Wextra -Werror
 
-ifeq ($(OS), Darwin)
-	TEST_LIBS=-lcheck
-else
-	TEST_LIBS=-lcheck -lsubunit -pthread -lrt -lm
+SOURCES=$(wildcard s21_*.c)
+OBJECTS=$(SOURCES:.c=.o)
+EXECUTABLE=s21_math
+
+TESTS_SOURCES=test.c $(wildcard tests/*.c)
+TESTS_OBJECTS=$(TESTS_SOURCES:.c=.o)
+
+ifeq ($(shell uname -s),Linux)
+	TEST_FLAGS += -lrt -lsubunit
 endif
 
-all: clean s21_math.a test gcov_report
+all: s21_math.a
 
-s21_math.a: s21_math.o
-	$(CC) -c $(SOURSES) $(shell pkg-config --libs --cflags check)
-	ar rcs s21_math.a $(OBJECTS)
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $^ -o $@
+
+.c.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+
+s21_math.a: $(OBJECTS)
+	ar -rcs s21_math.a $(OBJECTS)
+	ranlib s21_math.a
+
+test: $(TESTS_OBJECTS) s21_math.a
+	$(CC) $^ -o test $(TEST_FLAGS)
+	./test
+	
+gcov_report: $(TESTS_OBJECTS)
+	$(CC) $(GCOV_FLAGS) $(TESTS_OBJECTS) $(SOURCES) $(TEST_FLAGS) -o test
+	./test
+	gcov *.gcno
+	lcov -t "test" -o test.info -c -d . --rc lcov_branch_coverage=1
+	genhtml -o report test.info --rc lcov_branch_coverage=1
+	open report/index.html
 
 clean:
-	rm -rf ./*.o ./*.a ./a.out gcov_test *.html *.css ./GcovReport ./*.gcno ./*.gcda ./report ./*.info ./math_o ./*.dSYM ./test_s21math ./CPPLINT* test
-
-test: test_s21math.c s21_math.a
-	$(CC) $(CFLAGS) -c test_s21math.c -o test.o $(shell pkg-config --libs --cflags check)
-	$(CC) test.o s21_math.a $(TEST_LIBS) -o test $(shell pkg-config --libs --cflags check)
-
-gcov_report: s21_math.a 
-	$(CC) $(CFLAGS) --coverage test_s21math.c s21_math.c s21_math.a $(TEST_LIBS) -o gcov_test $(shell pkg-config --libs --cflags check)
-	chmod +x *
-	./gcov_test
-	lcov -t "gcov_test" -o gcov_test.info --no-external -c -d .
-	genhtml -o report/ gcov_test.info
-	open ./report/index.html
-
-check: test
-	cppcheck --enable=all --suppress=missingIncludeSystem --inconclusive --check-config *.c *.h
-	cp ../materials/linters/CPPLINT.cfg .
-	python3 ../materials/linters/cpplint.py --extension=c *.c *.h *.c
-	rm -rf CPPLINT.cfg
-	make test
-ifeq ($(OS), Darwin)
-	leaks --atExit -- test
-else
-	CK_FORK=no valgrind --vgdb=no --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=RESULT_VALGRIND.txt ./test
-endif
+	rm -rf *.o tests/*.o $(EXECUTABLE) test
+	rm -rf *.gcno *.gcov *.gcda *.info report s21_math.a
 
 rebuild: clean all
-	open ./report/index.html
+
+style:
+	clang-format -style=google -n ./s21_math.c
+	clang-format -style=google -n ./s21_math.h
+	clang-format -style=google -n ./s21_math_test.c
+	python3 ./cpplint.py --extensions=c ./s21_math.c

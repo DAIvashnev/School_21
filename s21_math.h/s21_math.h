@@ -1,59 +1,35 @@
 #ifndef SRC_S21_MATH_H_
 #define SRC_S21_MATH_H_
 
-#define s21_PI 3.141592653589793238462643
-#define s21_E 1e-17
-#define s21_NAN 0.0 / 0.0
-#define s21_INF 1.0 / 0.0
-#define s21_MAX_double 1.7976931348623157e308
+#include <stdlib.h>
 
-// 1 Вычисляет абсолютное значение целого числа.
-int s21_abs(int x);
+#include "stdio.h"
 
-// 2 Вычисляет арккосинус.
-long double s21_acos(double x);
+#define S21_PI 3.141592653589793
+#define S21_NAN 0.0 / 0.0
+#define S21_INFINITY 1.0 / 0.0
+#define S21_E 2.718281828459045235
 
-// 3 Вычисляет арксинус.
-long double s21_asin(double x);
+// ======================= ADDITIONAL FUNCTIONS ========================
+long double s21_factorial(long double x);
+int is_NAN(double x);
+long double int_degree_of_x(double x, double n);
 
-// 4 Вычисляет арктангенс.
-long double s21_atan(double x);
-
-// 5 Возвращает ближайшее целое число, не меньшее заданного значения.
-long double s21_ceil(double x);
-
-// 6 Вычисляет косинус.
-long double s21_cos(double x);
-
-// 7 Возвращает значение e, возведенное в заданную степень.
-long double s21_exp(double x);
-
-// 8 Вычисляет абсолютное значение числа с плавающей точкой.
-long double s21_fabs(double x);
-
-// 9 Возвращает ближайшее целое число, не превышающее заданное значение.
-long double s21_floor(double x);
-
-// 10 Остаток операции деления с плавающей точкой.
-long double s21_fmod(double x, double y);
-
-// 11 Вычисляет натуральный логарифм.
-long double s21_log(double x);
-
-// 12 Возводит число в заданную степень.
-long double s21_pow(double base, double exp);
-
-// 13 Вычисляет синус.
-long double s21_sin(double x);
-
-// 14 Вычисляет квадратный корень.
-long double s21_sqrt(double x);
-
-// 15 Вычисляет тангенс.
-long double s21_tan(double x);
-
-long double s21_factorial(double x);
-void round_to_pi(double *x);
-long double p_log(double x);
+// =========================  MAIN FUNCTIONS ===========================
+int s21_abs(int x);                        // 1 модуль
+long double s21_acos(double x);            // 2 арккосинус
+long double s21_asin(double x);            // 3 арксинус
+long double s21_atan(double x);            // 4 арктангенс
+long double s21_ceil(double x);            // 5 округление вверх
+long double s21_cos(double x);             // 6 косинус
+long double s21_exp(double x);             // 7 e, в степени
+long double s21_fabs(double x);            // 8 модуль
+long double s21_floor(double x);           // 9 округление
+long double s21_fmod(double x, double y);  // 10 остаток деления
+long double s21_log(double x);             // 11 логарифм
+long double s21_pow(double base, double exp);  // 12 число в степень
+long double s21_sin(double x);                 // 13 синус
+long double s21_sqrt(double x);  // 14 квадратный корень
+long double s21_tan(double x);   // 15 тангенс
 
 #endif  // SRC_S21_MATH_H_
