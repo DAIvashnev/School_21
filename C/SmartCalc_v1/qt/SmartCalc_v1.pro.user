@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 9.0.2, 2023-03-10T13:25:32. -->
+<!-- Written by QtCreator 9.0.2, 2023-03-22T19:16:11. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -234,9 +234,8 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">SmartCalc_v12</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/enedinae/Рабочий стол/C7_SmartCalc_v1.0-0/src/qt/SmartCalc_v1.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/enedinae/Рабочий стол/C7_SmartCalc_v1.0-0/src/qt/SmartCalc_v1.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/enedinae/Рабочий стол/MY_GIT/School_21/SmartCalc_v1/qt/SmartCalc_v1.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/enedinae/Рабочий стол/MY_GIT/School_21/SmartCalc_v1/qt/SmartCalc_v1.pro</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
